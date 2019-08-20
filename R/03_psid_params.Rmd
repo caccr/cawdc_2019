@@ -1,0 +1,312 @@
+---
+title: "`r paste('Consumer Confidence Report for PWS: ', params$psid)`"
+subtitle: "`r paste0(params$nam, ', ', params$city, ' (', params$county, ' CO.)')`"
+date: "`r paste0('For the period from ', paste0(lubridate::year(Sys.Date()), '-01-01'), ' to ', Sys.Date(), '.')`"
+output: 
+  html_document:
+    #theme: default
+    toc: true
+    toc_float: true
+params: 
+  psid: 0001
+  nam: "aaa"
+  city: "aaa"
+  county: "aaa"
+---
+
+
+***  
+
+`r paste0('Drinking water quality in your water system is tested for many chemical constituents as required by state and federal regulations. This report shows monitoring results for the period from ', paste0(lubridate::year(Sys.Date()), '-01-01'), ' to ', Sys.Date(), '.')`
+
+Este informe contiene información muy importante sobre su agua para beber. Favor de comunicarse `r params$nam` a [Enter Water System's Address or Phone Number Here] para asistirlo en español.
+
+这份报告含有关于您的饮用水的重要讯息。请用以下地址和电话联系 `r params$nam` 以获得中文的帮助: [Enter Water System's Address Here] [Enter Water System's Phone Number Here]
+
+
+```{r, echo=FALSE}
+library(knitr)
+knitr::opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, echo = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(tibbletime)
+library(forcats)
+library(plotly)
+library(DT)
+library(mapview)
+library(sf)
+
+# minimal data (~4 GB)
+#d <- read_rds("/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min.rds")
+d <- filter(chem_tp_min_2019, PRIM_STA_C == params$psid)
+
+# vars to report
+wst <- formatC(d$`Primary Water Source Type`[1], big.mark = ",")
+tsc <- formatC(d$`Total Number of Service Connections`[1], big.mark = ",")
+pop <- formatC(d$`Total Population`[1], big.mark = ",")
+
+# map: in order for this to work, `04_generate_ccrs.R` needs to read in
+# sa as a sf object, so that it's subsettable by `dplyr::filter()`
+# my_water_system <- filter(sa, pwsid == params$psid)
+my_water_system <- filter(st_as_sf(ep), WATER_SYST == params$psid) %>% 
+  select(-c(url, DEFAULT_ME, ObjectID)) %>% 
+  rename(WATER_SYSTEM_NUMBER = WATER_SYST,
+         WATER_SYSTEM_NAME = WATER_SY_1,
+         REGULATING_AGENCY = REGULATING,
+         CLASSIFICATION = CLASSIFICA,
+         CITY = CITY_1,
+         VIOLATION_DETAILS = DETAILED_V,
+         SERVICE_CONNECTIONS = Service_Co)
+
+
+# text for water quality plot
+l1a <- "Of the "
+l1b <- " chemicals tested for in your water system, "
+l1c <- " **chemicals were detected**, and " 
+l1d <- " **average annual chemical findings exceeded their MCL, though this dos not necessarily constitute an MCL violation [$^*$](#vio-link)**. <br>"
+l2 <- "In the plot below, the Maximum Contaminant Level (MCL) is shown as a black horizontal dashed line. Each contaminant tested for in your water utility is represented by a vertical bar, and the height of the bar indicates the level of contaminantion of that sample. Any contaminant at or exceeding the black horizontal dashed line indicates contaminated water, and values under the black line indicate **safe** drinking water. <br><br> Hover over the bars to see more information for each contaminant."
+
+
+# text for psids with detects and non-detects
+l3 <- " **other chemicals were tested for and NOT detected**, including: <br><br> "
+l4 <- " <br><br> Because they were not detected, these chemicals are not included in the chart above."
+
+# text for psids with no records of detects
+l5 <- "**Although tests were made, no chemicals were detected in your water system.**" 
+l6 <- "The following chemicals were tested for: "
+
+# exceedance note
+l7 <- "If a contaminant has an exceedance of 999%, this indicates a detection for which the MCL is 0. Any number divided by 0 is infinite, thus it is assigned an arbitarty large value (999) to indicate exceedance." 
+
+
+# plotly buttons to remove
+buttons_to_remove <- list("zoom2d", "select2d", "lasso2d", "autoscale",
+                          "hoverClosestCartesian", "hoverCompareCartesian",
+                          "zoom3d", "pan3d", "resetCameraDefault3d", "resetCameraLastSave3d", "hoverClosest3d",
+                          "orbitRotation", "tableRotation",
+                          "zoomInGeo", "zoomOutGeo", "resetGeo", "hoverClosestGeo",
+                          "sendDataToCloud",
+                          "hoverClosestGl2d",
+                          "hoverClosestPie",
+                          "toggleHover",
+                          "toggleSpikelines", "pan")
+```
+
+
+```{r}
+# calculate average annual finding per chemical
+# and the proportion exceedance of the MCL
+dg <- d %>% 
+  filter(CHEMICAL__ != "PH, LABORATORY") %>%
+  group_by(CHEMICAL__, MCL, RPT_UNIT, XMOD) %>% 
+  summarise(mean_finding = mean(FINDING)) %>% 
+  ungroup() %>% 
+  mutate(prop_mcl = abs((mean_finding/MCL))*100,
+         # valid measurements are blank (NA) in the data, so encode them
+         XMOD     = ifelse(is.na(XMOD), "V", XMOD), 
+         # MCL of 0 cause Inf results, encode as 999
+         prop_mcl = ifelse(is.infinite(prop_mcl), 999, prop_mcl))
+
+# chemical is detected
+dg1 <- filter(dg, prop_mcl > 0 & XMOD != "<")  
+
+# chemical not detected
+dg2 <- filter(dg, XMOD == "<" | mean_finding == 0 ) 
+
+# exceedance events
+ee <- nrow(filter(dg1, prop_mcl >= 100))
+
+# violation status
+vio <- filter(ep@data, WATER_SYST == params$psid) %>% pull(GIS_STATUS)
+viostr <- paste0(" This water system is **", vio, "**")  
+if(length(vio) == 1){
+  if(vio == "RETURNED TO COMPLIANCE"){
+    viostr <- paste0(" This water system has **", vio, "**")
+  }
+}
+if(length(vio)==0) {viostr <- " Compliance status is **UNKNOWN** for this water system"}
+contactstr <- '[Contact your water system](#contact-link) for more information.'
+```
+
+***  
+
+## About my water system
+
+**`r params$nam`** is located in **`r paste0(params$city, ' (', params$county, ' CO.)')`**. The primary water source type is **`r wst`**. This water system services **`r tsc`** connections, and serves a total population of **`r pop`** individuals.
+
+```{r, out.width="100%"}
+if(nrow(my_water_system) > 0 ){
+  mapview(my_water_system, legend = FALSE)
+}
+```
+
+
+
+***  
+
+
+<!-- ## How clean is my water?  -->
+
+```{r}
+if(length(vio) == 1){ 
+  if(vio == "IN COMPLIANCE") viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "green"), viostr)
+  if(vio == "OUT-OF-COMPLIANCE") viostr <- paste0(" ", fontawesome::fa("exclamation-circle", fill = "red"), viostr)
+  if(vio == "RETURNED TO COMPLIANCE") viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "green"), viostr)
+}
+if(length(vio) == 0){
+  viostr <- paste0(" ", fontawesome::fa("question-circle", fill = "red"), viostr)
+}
+```
+
+## `r viostr`
+
+`r if(length(vio) == 0) contactstr`
+
+`r if(nrow(dg1) > 0) paste0(l1a, "**", nrow(dg), "**", l1b, "**", nrow(dg1), "**", l1c, "**", ee, "**", l1d) `
+
+`r if(nrow(dg1) > 0) paste(l2) `
+
+
+
+```{r, out.width="100%"}
+colourCount = length(unique(dg1$CHEMICAL__))
+getPalette = colorRampPalette(RColorBrewer::brewer.pal(9, "Set1"))
+
+if(nrow(dg1) > 0){
+  p <- mutate(dg1, CHEMICAL__ = stringr::str_wrap(CHEMICAL__, 15,1,1)) %>% 
+    ggplot(aes(fct_reorder(CHEMICAL__, prop_mcl), 
+                       prop_mcl, 
+                       fill = CHEMICAL__,
+                       text = paste("Chemical:", CHEMICAL__, "<br>",
+                                    "Exceedance:", round(prop_mcl, 2), "%", "<br>",
+                                    "Average Result:", round(mean_finding, 2), RPT_UNIT, "<br>",
+                                    "MCL:", MCL, RPT_UNIT, "<br>",
+                                    "XMOD:", XMOD),
+                       group = 1)) +
+    geom_col() +
+    scale_y_continuous(breaks = c(0,25,50,75,100),
+                       labels = function(x) paste0(x, "%")) +
+    coord_cartesian(ylim = c(0, 110)) +
+    labs(x = "Chemical", y = "Percent MCL Exceedance (%)", fill = "% Exceedance",
+         #title = "How Clean is my Water?",
+         subtitle = "Values less than 100% are safe.") +
+    geom_hline(yintercept = 100, linetype = "dashed", color = "black") +
+    #annotate("text", x = nrow(dg1)/3, y = 90, angle = 90, color = "red",
+    #         label = "MCL Threshold") + 
+    #coord_flip() +
+    #scale_fill_viridis_d() +
+    #scale_fill_brewer(palette = "Set2") +
+    scale_fill_manual(values = getPalette(colourCount)) + 
+    theme_minimal() +
+    theme(panel.grid.minor = element_blank(),
+          axis.text.x = element_blank(),
+          panel.grid.major.x = element_blank()) +
+    guides(fill = FALSE)
+  
+  ggplotly(p, tooltip = "text") %>% 
+    config(modeBarButtonsToRemove = buttons_to_remove,
+           displaylogo = FALSE)
+}
+```
+
+`r if(nrow(dg1) > 0 & nrow(dg2) > 0) paste0("**", nrow(dg2), "**", l3, paste(dg2$CHEMICAL__, collapse = ", "), "." , l4) `
+
+`r if(nrow(dg1) == 0 & nrow(dg2) > 0) paste0(l5, "<br><br>", l6, paste(dg2$CHEMICAL__, collapse = ", "), ".") `
+
+
+
+***  
+
+
+## Actions taken to address MCL exceedances _[in progress]_ 
+<!-- ## r if(nrow(violations) > 0) paste('Actions taken to assess violations') -->
+
+When a measured contaminant exceeds the MCL, a set of regulatory actions is taken to improve water quality. All regulatory actions taken during the period of this report are shown below:  
+
+Table or text summarizing this.  
+
+
+
+***  
+
+
+## What does this report mean? _[in progress]_  {#vio-link}
+
+* more lay interpretation for people and how it applies to user. Scope language is in [this template](https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/ccr/3ccr_swsrpttemplate_for_2018_ccr_english_20190219.docx). 
+
+* Is the water system treating for the detect above the MCL? Need to show this in the report.  
+
+
+***  
+
+
+## Explore/download data
+
+Explore your water quality data in the interactive table below, or download as an Excel or CSV file.  
+
+```{r}
+dg %>% 
+  select(CHEMICAL__, mean_finding, MCL, RPT_UNIT, XMOD) %>% 
+  mutate(mean_finding = round(mean_finding, 2)) %>% 
+  datatable(., 
+            colnames = c("CHEMICAL", "SAMPLE_MEAN","MCL","UNIT", "XMOD"),
+            extensions = 'Buttons', 
+            options = list(dom = 'Bfrtip', 
+                           buttons = c('excel', "csv")))
+```
+
+*** 
+
+<!-- ## How does my water compare to county and statewide averages? -->
+
+
+<!-- ***   -->
+
+
+<!-- ## My water quality over time. -->
+
+<!-- Only showing this year's water quality data. What about the past 5 years? -->
+
+<!-- ***   -->
+
+
+
+## More information
+
+### *Contact* {#contact-link}
+
+`r paste0(" ", fontawesome::fa("map-marker", fill = "red"), " : ", "address goes here")`  
+`r paste0(" ", fontawesome::fa("phone", fill = "blue"), ": ", "phone number goes here")`  
+`r paste0(" ", fontawesome::fa("paper-plane", fill = "green"), ": ", "email contact goes here")` 
+
+### Disclaimer
+
+This Consumer Confidence Report was automatically generated, and hence, the data herein may be incomplete or inaccurate. The authors claim no liability or responsibility for data quality. This data represents the average result of all post-treatment samples from the period from `r paste0(paste0(lubridate::year(Sys.Date()), '-01-01'), ' to ', Sys.Date())`. For questions about your local water quality, contact your water system.  
+
+### *Important Vocabulary*
+
+* **Maximum Contaminant Level (MCL)** refers to the highest level of a contaminant that is allowed in drinking water.  Primary MCLs are set as close to the PHGs (or MCLGs) as is economically and technologically feasible. Secondary MCLs are set to protect the odor, taste, and appearance of drinking water.  
+
+* **Maximum Contaminant Level Goal (MCLG)**: The level of a contaminant in drinking water below which there is no known or expected risk to health.  MCLGs are set by the U.S. Environmental Protection Agency (U.S. EPA).  
+
+* **Public Health Goal (PHG)**: The level of a contaminant in drinking water below which there is no known or expected risk to health.  PHGs are set by the California Environmental Protection Agency.  
+
+
+### *Explanation of terms in this report*
+
+`r if(any(dg1$prop_mcl == 999)) l7`
+
+In the barplot and table above, `XMOD` indicates additional qualifiers on the data.  
+
+* `<`: the measured amount did not constitute a chemical detection  
+* `V`: valid data  
+* `-`: the data can be negative (e.g. radionuclides and Langelier index)  
+* `F`: false positive  
+* `I`: invalidated  
+* `Q`: questionable 
+
+
+

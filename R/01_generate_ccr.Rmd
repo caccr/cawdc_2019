@@ -1,0 +1,102 @@
+---
+title: "Water Quality Report for PWS: 0103039"
+subtitle: "`r paste('Generated:', Sys.Date())`"
+output: html_document
+---
+
+<!-- Created by Rich Pauloo (richpauloo@gmail.com) on 2019-07-01 -->
+<!-- The purpose of this script is to provide a script that auto-generates  -->
+<!-- a minimal CCR. The script is a proof-of-concept, and can be modified  -->
+<!-- to take the water system id as an input, which then generates a report -->
+<!-- for that water utility. A next step beyond this script would be to  -->
+<!-- develop an application that sits on top of the cleaned and preprocessed -->
+<!-- data and renders summarized data on-the-fly for a given utility.  -->
+<!-- Spatial boundaries for all > 9,000 utilities exisit, and can be  -->
+<!-- incorporated. A drop-down menu and geo-aware search will facilitate  -->
+<!-- users finding their water system. -->
+
+```{r, echo=FALSE}
+library(knitr)
+knitr::opts_chunk$set(message = FALSE, error = FALSE, warning = FALSE, echo = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(tibbletime)
+library(forcats)
+library(plotly)
+library(DT)
+
+# all data (~4 GB)
+#d <- read_rds("/Users/richpauloo/Desktop/ca_water_datathon/chem.rds")
+
+# subset of data for prototyping
+# d <- read_rds("/Users/richpauloo/Desktop/ca_water_datathon/chem_sub.rds")
+d <- read_rds("/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_sub.rds")
+
+id <- d$PRIM_STA_C %>% unique()
+```
+
+
+```{r}
+dg <- d %>% 
+  filter(PRIM_STA_C == id[3],
+         CHEMICAL__ != "PH, LABORATORY",
+         MCL > 0) %>%
+  group_by(CHEMICAL__, MCL, RPT_UNIT) %>% 
+  summarise(mean_finding = mean(FINDING)) %>% 
+  ungroup() %>% 
+  mutate(prop_mcl = mean_finding/MCL) 
+dg1 <- filter(dg, prop_mcl > 0)
+```
+
+***  
+
+
+## How Clean is my Water? 
+
+In the plot below, the Maximum Contaminant Level (MCL) is shown as a red dashed line. Any contaminant exceeding this red dashed line is in violation of the MCL, and values less than the red line indicate **safe** drinking water.  
+
+
+```{r, out.width="100%"}
+p <- ggplot(dg1, aes(fct_reorder(CHEMICAL__, prop_mcl), prop_mcl, fill = prop_mcl)) +
+  geom_col() +
+  scale_y_continuous(limits = c(0,1)) +
+  labs(x = "", y = "Percent MCL Exceedance", fill = "% Exceedance",
+       #title = "How Clean is my Water?",
+       subtitle = "Values less than 1 are safe.") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "red") +
+  annotate("text", x = nrow(dg1)/1.66, y = 0.95, angle = 90, color = "red",
+           label = "MCL Threshold") + 
+  coord_flip() +
+  scale_fill_viridis_c() +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank()) +
+  guides(fill = FALSE)
+p
+```
+
+***  
+
+## Download this data
+
+Explore the data in the interactive table below, or download as a CSV or Excel file.  
+
+```{r}
+dg1 %>% 
+  select(CHEMICAL__, mean_finding, MCL, RPT_UNIT) %>% 
+  mutate(mean_finding = round(mean_finding, 2)) %>% 
+  datatable(., 
+            colnames = c("CHEMICAL", "SAMPLE_MEAN","MCL","UNIT"),
+            extensions = 'Buttons', 
+            options = list(dom = 'Bfrtip', 
+                           buttons = c('excel', "csv")))
+```
+
+***  
+
+## Learn More
+
+[Lorem ipsum](google.com) dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 
+

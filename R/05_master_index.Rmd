@@ -1,0 +1,226 @@
+---
+title: "California Consumer Confidence Reports"
+#author: "Rich Pauloo"
+output: 
+  flexdashboard::flex_dashboard:
+    #orientation: rows
+    social: menu
+    #source_code: embed
+#runtime: shiny
+---
+
+```{r global, include=FALSE}
+library(flexdashboard)
+library(leaflet)
+library(tidyverse)
+library(sf)
+library(rmapshaper)
+```
+
+Directions {.sidebar}
+-----------------------------------------------------------------------
+
+
+Welcome to the California database for water quality Consumer Confidence Reports (CCR).  
+
+To view your CCR, first locate your water system.  
+
+<i class="fas fa-map-marked-alt" style = "color: #ec5b33"></i>
+**Search the map**: click <i class="fas fa-crosshairs"></i> to locate yourself, or <i class="fas fa-search"></i> to search by address. Then click a water system, and click the link to view your CCR. Click <img src="https://static.thenounproject.com/png/74310-200.png" style="width:15px;height:15px;"> to toggle basemaps and water systems by violation status.
+
+<i class="fas fa-table" style = "color: #ecbb33"></i>
+**Search the table**: change tabs, and use the Search bar to find your water system by name, city, county, or PSID (if you know it). Click the link to view your CCR.  
+
+<br> 
+
+*** 
+
+This site is proudly built with [<i class="fab fa-r-project" style = "color: #2B76CC"></i>](https://www.r-project.org/) & [Jekyll](https://jekyllrb.com/) (theme by [jmcglone](https://github.com/jmcglone/jmcglone.github.io)), and hosted on [<i class="fab fa-github" style = "color: #6e5494"></i> Pages ](https://pages.github.com/).  
+
+© 2019 by [Rich Pauloo](https://richpauloo.github.io).  
+
+Read more about [this project](https://caccr.github.io/about/).  
+
+
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### <i class="fas fa-map-marked-alt" style = "color: #ec5b33"></i> **Search the map**
+    
+```{r, out.width="100%"}
+# sa is the spatial polygons sf object pulled into memory by
+# `04_generate_ccrs.R`. Since that script is what writes this one, 
+# the following subsetting should work since it get sa from the 
+# .GlobalEnv in which this script is executed.
+
+# calculate area in order to sort polygons by descending area
+# so small ones are plotted on top of big ones, then remove area
+# sa$area <- st_area(sa)
+# sa <- arrange(sa, -area) 
+# sa$area <- NULL 
+# 
+# # text wrap the address
+# sa$address <- str_wrap(sa$address, width = 15)
+# 
+# # create colors for the polygons
+# getPalette <- colorRampPalette(RColorBrewer::brewer.pal(8, "Dark2"))
+# 
+# # format URLs for ccr files
+# sa$url <- paste0("<b><a href='https://caccr.github.io/ccrs/", 
+#                  sa$pwsid, 
+#                  "/'>CLICK TO VIEW CCR</a></b>")
+# 
+# # get names of each pws from the key generated in `04_generate_ccrs.R`
+# key <- read_rds("/Users/richpauloo/Desktop/ca_water_datathon/psid_name_key.rds")
+# sa2  <- left_join(sa, key, by = c("pwsid" = "PRIM_STA_C"))
+
+
+# now the leaflet: points
+# split points into list for each set of circle markers
+epl <- sf::st_as_sf(ep) %>% 
+  # jitter points so that overlapping points are clickable
+  sf::st_jitter() %>% 
+  select(WATER_SYST, WATER_SY_1, GIS_STATUS, url) %>% 
+  as(., "Spatial") %>% 
+  # split by in-, out-of-, returned-to-compliance
+  split(., ep$GIS_STATUS) 
+
+
+# create leaflet and color vector for markers
+l <- leaflet()
+cols <- c("blue", "red", "orange")
+labs <- c("IN COMPLIANCE", "OUT-OF-COMPLIANCE", "RETURNED TO COMPLIANCE")
+
+# add circle markers for each violation status:
+# in- out-of- and returned-to-compliance
+for(i in 1:3){
+  l <- addCircleMarkers(l, 
+                        epl[[i]], 
+                        lng    = coordinates(epl[[i]])[,1],
+                        lat    = coordinates(epl[[i]])[,2],
+                        radius = 2,
+                        color = cols[i], 
+                        group = names(epl)[i],
+                        label = paste0(epl[[i]]$WATER_SY_1, 
+                                       " (PWSID: ", epl[[i]]$WATER_SYST, ")"),
+                        popup = paste0(epl[[i]]$WATER_SY_1, "<br>",
+                                       "PWSID: ",  epl[[i]]$WATER_SYST, "<br>",
+                                       "STATUS: ", epl[[i]]$GIS_STATUS, "<br>",
+                                       epl[[i]]$url)
+  )
+}
+
+# tiles
+l %>% 
+  addProviderTiles(providers$CartoDB.PositronNoLabels, group = "Carto") %>% 
+  addProviderTiles(providers$Esri.WorldImagery, group = "World") %>% 
+  addProviderTiles(providers$OpenStreetMap, group = "Street") %>% 
+  
+  # view
+  setView(-119, 37.5, 6) %>% 
+  addLayersControl(
+    overlayGroups = names(epl),
+    baseGroups = c("Carto", "World", "Street"),
+    options = layersControlOptions(collapsed = TRUE, 
+                                   position = "bottomright")
+  ) %>% 
+  
+  # legend
+  addLegend("bottomleft", 
+            colors = cols, 
+            labels = labs, 
+            title = "Compliance Status") %>% 
+  
+  # buttons
+  addEasyButton(easyButton(
+    icon="fa-crosshairs", title="Locate Me",
+    onClick=JS("function(btn, map){ map.locate({setView: true}); }"), 
+    position = "topleft")) %>% 
+  addEasyButton(easyButton(
+    icon="fa-globe", title="Zoom to Level 1",
+    onClick=JS("function(btn, map){ map.setZoom(6); }"),
+    position = "topleft")) %>% 
+  
+  # geocoding
+  leaflet.extras::addSearchOSM(options = list(position = "topright"))
+
+
+# # now the leaflet: polygons
+# leaflet(sa2) %>% 
+#   
+#   # tiles
+#   addProviderTiles(providers$CartoDB.Positron,  group = "Carto") %>% 
+#   addProviderTiles(providers$Esri.WorldImagery, group = "World") %>% 
+#   addProviderTiles(providers$OpenStreetMap,     group = "Street") %>% 
+#   
+#   # data
+#   addPolygons(weight = 1, opacity = 1, color = getPalette(8), 
+#               label = paste0(sa2$`Water System Name`, 
+#                              " (PWSID: ", sa2$pwsid, ")"),
+#               popup = paste0("PWSID: ", sa2$pwsid, "<br>",
+#                              sa$address, "<br>",
+#                              sa$url)) %>% 
+#   
+#   # view
+#   setView(-119, 37.5, 6) %>% 
+# 
+#   # buttons
+#   addEasyButton(easyButton(
+#     icon="fa-crosshairs", title="Locate Me",
+#     onClick=JS("function(btn, map){ map.locate({setView: true}); }"), 
+#     position = "topleft")) %>% 
+#   addEasyButton(easyButton(
+#     icon="fa-globe", title="Zoom to Level 1",
+#     onClick=JS("function(btn, map){ map.setZoom(6); }"),
+#     position = "topleft")) %>% 
+#     
+#   # geocoding
+#   addSearchOSM(options = list(position = "topright")) %>% 
+#     
+#   # layer control for tiles
+#   addLayersControl(
+#     baseGroups = c("Carto", "World", "Street"),
+#     options = layersControlOptions(collapsed = TRUE, 
+#                                    position = "bottomright")
+#   )
+```
+
+
+### <i class="fas fa-table" style = "color: #ecbb33"></i> **Search the table**
+    
+```{r, out.width="100%"}
+caption <- "Use the Search bar on the right. Enter a water system name, city, county, or PWSID (if you know it)."
+
+# create URLs for each PSID to link to ccr index.html files,
+# select and order relevant columns
+# and format column names and values for datatable
+chem_tp_min_2019 %>% 
+  
+  # one table entry per psid
+  group_by(PRIM_STA_C) %>% 
+  slice(1) %>% 
+  ungroup() %>% 
+  
+  # add urls
+  mutate(URL = paste0("<b><a href='https://caccr.github.io/ccrs/", 
+                      PRIM_STA_C, 
+                      "/' target='_blank'>CLICK TO VIEW CCR</a></b>"),
+         # make the PWSID searchable
+         PRIM_STA_C = as.numeric(PRIM_STA_C)) %>% 
+  
+  # format names for table
+  rename(NAME = `Water System Name`, PWSID = PRIM_STA_C, 
+         COUNTY = `Principal County Served`) %>% 
+  
+  # select relevant columns for table
+  select(URL, NAME, CITY, COUNTY, PWSID) %>% 
+
+  # add to the datatable
+  DT::datatable(.,
+                caption = caption,
+                rownames = FALSE,
+                escape = FALSE
+)
+```
+   
