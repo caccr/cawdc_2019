@@ -1,7 +1,3 @@
-
-    #Lindsay Poirier created this script.
-#Dependencies Requests, csv, BeautifulSoup
-
 import requests
 import csv
 import string
