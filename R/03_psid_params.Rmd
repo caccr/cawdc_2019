@@ -1,7 +1,7 @@
 ---
 title: "`r paste('Consumer Confidence Report for PWS: ', params$psid)`"
 subtitle: "`r paste0(params$nam, ', ', params$city, ' (', params$county, ' CO.)')`"
-date: "`r paste0('For the period from ', paste0(lubridate::year(Sys.Date()) - 2, '-01-01'), ' to ', Sys.Date(), '.')`"
+date: "`r paste0('For the period from ', paste0('2017-01-01 to ', Sys.Date(), '.'))`"
 output: 
   html_document:
     #theme: default
@@ -149,7 +149,7 @@ if(length(vio) == 0){
 
 ## What does this report mean? 
 
-`r paste0('Drinking water quality in your water system is tested for many chemical constituents as required by state and federal regulations. This report shows monitoring results for the period from ', paste0(lubridate::year(Sys.Date()), '-01-01'), ' to ', Sys.Date(), '.')`
+`r paste0('Drinking water quality in your water system is tested for many chemical constituents as required by state and federal regulations. This report shows monitoring results for the period from 2017-01-01 to ', Sys.Date(), '.')`
 
 <!-- * more lay interpretation for people and how it applies to user. Scope language is in [this template](https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/ccr/3ccr_swsrpttemplate_for_2018_ccr_english_20190219.docx).  -->
 
@@ -316,9 +316,7 @@ This Consumer Confidence Report was automatically generated, and hence, the data
 
 * **Maximum Contaminant Level (MCL)** refers to the highest level of a contaminant that is allowed in drinking water.  Primary MCLs are set as close to the PHGs (or MCLGs) as is economically and technologically feasible. Secondary MCLs are set to protect the odor, taste, and appearance of drinking water.  
 
-* **In Compliance**: If a water system is "In Compliance" it means that the system is achieving compliance with the federal/state primary drinking water standards (i.e. MCL and TT requirements). For chronic contaminants, compliance is defined based on the running annual average (RAA), as specified in Section 64432 of Title 22 of the California Code of Regulations (CCR). For nitrate, compliance is based on quarterly monitoring as specified in Section 64432.1 of Title 22 of the CCR. To find out more about the types of contaminants and their associated MCLs, refer to the table of [Maximum Contaminant Levels and Regulatory Dates for Drinking Water](http://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/dwdocuments/MCLsEPAvsDWP-2014-07-01.pdf).  
-
-There are certain state drinking water standards, such as perchlorate, which are more stringent than the federal drinking water standards.  
+* **In Compliance**: If a water system is "In Compliance" it means that the system is achieving compliance with the federal/state primary drinking water standards (i.e. MCL and TT requirements). For chronic contaminants, compliance is defined based on the running annual average (RAA), as specified in Section 64432 of Title 22 of the California Code of Regulations (CCR). For nitrate, compliance is based on quarterly monitoring as specified in Section 64432.1 of Title 22 of the CCR. To find out more about the types of contaminants and their associated MCLs, refer to the table of [Maximum Contaminant Levels and Regulatory Dates for Drinking Water](http://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/dwdocuments/MCLsEPAvsDWP-2014-07-01.pdf). There are certain state drinking water standards, such as perchlorate, which are more stringent than the federal drinking water standards.  
 
 * **Out of Compliance**: If a water system is "Out-of-Compliance" it means that the system is currently in violation of one or more federal/state primary drinking water standard (i.e. MCL and TT requirements) and an enforcement action has been taken.  
 
