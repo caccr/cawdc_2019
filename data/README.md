@@ -11,3 +11,4 @@ This folder contains data to start working with.
 ### Other data
 
 * `psids_not_in_hrw_gis_data.csv`: 1 column data frame of PSIDs that we have chemical data for, but not compliance status for. These correspond to stations that are NOT listed in the [HWR GIS data - link 'Download GIS Map Shapfile'](https://www.waterboards.ca.gov/water_issues/programs/hr2w/), from which we currently obtain compliance status.  
+* `PWS_Info.csv`: contact information of all PSIDs, scraped by Lindsay.  

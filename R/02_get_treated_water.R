@@ -1,5 +1,6 @@
 library(tidyverse)
 library(sp)
+library(raster)
 
 # PSID to treatment objective code key from SWRCB.
 # To the best of my knowledge, and from converations with people at
@@ -34,53 +35,53 @@ ep$url <- paste0("<b><a href='https://caccr.github.io/ccrs/",
                  "/index.html'>CLICK TO VIEW CCR</a></b>")
 
 # split into list for each set of circle markers
-epl <- sf::st_as_sf(ep) %>% 
-  sf::st_jitter() %>% 
-  as(., "Spatial") %>% 
-  split(., ep$GIS_STATUS)
+# epl <- sf::st_as_sf(ep) %>% 
+#   sf::st_jitter() %>% 
+#   as(., "Spatial") %>% 
+#   split(., ep$GIS_STATUS)
 
-l <- leaflet()
-cols <- c("lightblue", "red", "orange")
+# l <- leaflet()
+# cols <- c("lightblue", "red", "orange")
 
-for(i in 1:3){
-  l <- l %>% addCircleMarkers(epl[[i]], 
-                        lng = coordinates(epl[[i]])[,1],
-                        lat = coordinates(epl[[i]])[,2],
-                        radius = 2,
-                        color = cols[i], 
-                        group = names(epl)[i],
-                        label = paste0(epl[[i]]$WATER_SY_1, 
-                                       " (PWSID: ", epl[[i]]$WATER_SYST, ")"),
-                        popup = paste0(epl[[i]]$WATER_SY_1, "<br>",
-                                       "PWSID: ",  epl[[i]]$WATER_SYST, "<br>",
-                                       "STATUS: ", epl[[i]]$GIS_STATUS, "<br>",
-                                       epl[[i]]$url)
-  )
-}
-
-l %>% 
-  addProviderTiles(providers$CartoDB.DarkMatterNoLabels,  group = "Carto") %>% 
-  addProviderTiles(providers$Esri.WorldImagery, group = "World") %>% 
-  addProviderTiles(providers$OpenStreetMap,     group = "Street") %>% 
-  setView(-119, 37.5, 6) %>% 
-  addLayersControl(
-    overlayGroups = names(epl),
-    baseGroups = c("Carto", "World", "Street"),
-    options = layersControlOptions(collapsed = TRUE, 
-                                   position = "bottomright")
-  ) %>% 
-  # buttons
-  addEasyButton(easyButton(
-    icon="fa-crosshairs", title="Locate Me",
-    onClick=JS("function(btn, map){ map.locate({setView: true}); }"), 
-    position = "topleft")) %>% 
-  addEasyButton(easyButton(
-    icon="fa-globe", title="Zoom to Level 1",
-    onClick=JS("function(btn, map){ map.setZoom(6); }"),
-    position = "topleft")) %>% 
-  
-  # geocoding
-  leaflet.extras::addSearchOSM(options = list(position = "topright"))
+# for(i in 1:3){
+#   l <- l %>% addCircleMarkers(epl[[i]], 
+#                         lng = coordinates(epl[[i]])[,1],
+#                         lat = coordinates(epl[[i]])[,2],
+#                         radius = 2,
+#                         color = cols[i], 
+#                         group = names(epl)[i],
+#                         label = paste0(epl[[i]]$WATER_SY_1, 
+#                                        " (PWSID: ", epl[[i]]$WATER_SYST, ")"),
+#                         popup = paste0(epl[[i]]$WATER_SY_1, "<br>",
+#                                        "PWSID: ",  epl[[i]]$WATER_SYST, "<br>",
+#                                        "STATUS: ", epl[[i]]$GIS_STATUS, "<br>",
+#                                        epl[[i]]$url)
+#   )
+# }
+# 
+# l %>% 
+#   addProviderTiles(providers$CartoDB.DarkMatterNoLabels,  group = "Carto") %>% 
+#   addProviderTiles(providers$Esri.WorldImagery, group = "World") %>% 
+#   addProviderTiles(providers$OpenStreetMap,     group = "Street") %>% 
+#   setView(-119, 37.5, 6) %>% 
+#   addLayersControl(
+#     overlayGroups = names(epl),
+#     baseGroups = c("Carto", "World", "Street"),
+#     options = layersControlOptions(collapsed = TRUE, 
+#                                    position = "bottomright")
+#   ) %>% 
+#   # buttons
+#   addEasyButton(easyButton(
+#     icon="fa-crosshairs", title="Locate Me",
+#     onClick=JS("function(btn, map){ map.locate({setView: true}); }"), 
+#     position = "topleft")) %>% 
+#   addEasyButton(easyButton(
+#     icon="fa-globe", title="Zoom to Level 1",
+#     onClick=JS("function(btn, map){ map.setZoom(6); }"),
+#     position = "topleft")) %>% 
+#   
+#   # geocoding
+#   leaflet.extras::addSearchOSM(options = list(position = "topright"))
 
 
 
@@ -100,8 +101,8 @@ hrw$VIOL_BEGIN_DATE       <- lubridate::ymd(hrw$VIOL_BEGIN_DATE)
 hrw$VIOL_END_DATE         <- lubridate::ymd(hrw$VIOL_END_DATE)
 hrw$ENF_ACTION_ISSUE_DATE <- lubridate::ymd(hrw$ENF_ACTION_ISSUE_DATE)
 
-# filter for 2019
-hrw_2019 <- filter(hrw, VIOL_BEGIN_DATE >= lubridate::ymd("2019-01-01"))
+# filter for 2018
+hrw_2018 <- filter(hrw, VIOL_BEGIN_DATE >= lubridate::ymd("2018-01-01"))
 
 
 # SDWIS chemical data has it all (violations and no violations)
@@ -145,13 +146,13 @@ z <- select(chem_tp, PRIM_STA_C, CHEMICAL__, MCL, RPT_UNIT, XMOD,
 write_rds(z,
           "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min.rds")
 
-z2019 <- select(chem_tp, SAMP_DATE, PRIM_STA_C, CHEMICAL__, MCL, RPT_UNIT,
+z2017 <- dplyr::select(chem_tp, SAMP_DATE, PRIM_STA_C, CHEMICAL__, MCL, RPT_UNIT,
                 FINDING, `Water System Name`, `Principal County Served`, 
                 CITY, `Primary Water Source Type`, `Total Population`, 
                 `Total Number of Service Connections`, XMOD) %>% 
   mutate(SAMP_DATE = lubridate::ymd(SAMP_DATE)) %>% 
-  filter(SAMP_DATE >= lubridate::ymd("2019-01-01"))
+  filter(SAMP_DATE >= lubridate::ymd("2017-01-01"))
 
-write_rds(z2019,
-          "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min_2019.rds")
+write_rds(z2017,
+          "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min_2017.rds")
 

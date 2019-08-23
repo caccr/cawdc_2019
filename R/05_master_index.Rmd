@@ -195,7 +195,7 @@ caption <- "Use the Search bar on the right. Enter a water system name, city, co
 # create URLs for each PSID to link to ccr index.html files,
 # select and order relevant columns
 # and format column names and values for datatable
-chem_tp_min_2019 %>% 
+chem_tp_min_2017 %>% 
   
   # one table entry per psid
   group_by(PRIM_STA_C) %>% 
