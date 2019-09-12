@@ -4,7 +4,7 @@ output: html_document
 
 <body style="background-color:#030910">
 
-### Uh oh... We can't seem to find the page you're looking for.  
+<h3><font color ="white">Uh oh... We can't seem to find the page you're looking for.</font></h2>  
 
 [Return Home](https://caccr.github.io)  
 

@@ -21,7 +21,7 @@ Directions {.sidebar}
 -----------------------------------------------------------------------
 
 
-Welcome to the California database for water quality Consumer Confidence Reports (CCR).  
+Welcome to the California database for Consumer Confidence Reports (CCR), which display water quality data.  
 
 To view your CCR, first locate your water system.  
 
@@ -31,15 +31,21 @@ To view your CCR, first locate your water system.
 <i class="fas fa-table" style = "color: #ecbb33"></i>
 **Search the table**: change tabs, and use the Search bar to find your water system by name, city, county, or PSID (if you know it). Click the link to view your CCR.  
 
-<br> 
 
 *** 
 
-This site is proudly built with [<i class="fab fa-r-project" style = "color: #2B76CC"></i>](https://www.r-project.org/) & [Jekyll](https://jekyllrb.com/) (theme by [jmcglone](https://github.com/jmcglone/jmcglone.github.io)), and hosted on [<i class="fab fa-github" style = "color: #6e5494"></i> Pages ](https://pages.github.com/).  
+<i class="fas fa-globe" style = "color: #589167"></i>  [About this project](https://caccr.github.io/about/)  
+
+<i class="fas fa-question-circle" style = "color: #8105D8"></i>  [Frequently asked questions](https://caccr.github.io/faq/)  
+
+***  
+
+
+This site is proudly built with [<i class="fab fa-r-project" style = "color: #2B76CC"></i>](https://www.r-project.org/) & [<i class="fab fa-github" style = "color: #6e5494"></i> Pages ](https://pages.github.com/) ([Jekyll](https://jekyllrb.com/) theme by [jmcglone](https://github.com/jmcglone/jmcglone.github.io)).   
 
 © 2019 by [Rich Pauloo](https://richpauloo.github.io).  
 
-Read more about [this project](https://caccr.github.io/about/).  
+
 
 
 
@@ -80,7 +86,7 @@ Column {.tabset}
 # split points into list for each set of circle markers
 epl <- sf::st_as_sf(ep) %>% 
   # jitter points so that overlapping points are clickable
-  sf::st_jitter() %>% 
+  sf::st_jitter(factor = 0.004) %>% 
   select(WATER_SYST, WATER_SY_1, GIS_STATUS, url) %>% 
   as(., "Spatial") %>% 
   # split by in-, out-of-, returned-to-compliance
@@ -89,7 +95,7 @@ epl <- sf::st_as_sf(ep) %>%
 
 # create leaflet and color vector for markers
 l <- leaflet()
-cols <- c("blue", "red", "orange")
+cols <- c("green", "red", "orange")
 labs <- c("IN COMPLIANCE", "OUT-OF-COMPLIANCE", "RETURNED TO COMPLIANCE")
 
 # add circle markers for each violation status:
@@ -143,7 +149,8 @@ l %>%
     position = "topleft")) %>% 
   
   # geocoding
-  leaflet.extras::addSearchOSM(options = list(position = "topright"))
+  leaflet.extras::addSearchOSM(options = list(position = "topright")) %>% 
+  leafem::addMouseCoordinates()
 
 
 # # now the leaflet: polygons

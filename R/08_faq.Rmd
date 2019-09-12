@@ -1,0 +1,136 @@
+---
+title: Frequently Asked Questions
+output: html_document
+---
+
+***  
+
+<details>
+<summary>**What is a *Maximum Contaminant Level?***</summary>
+  
+**Maximum Contaminant Level (MCL)** refers to the highest level of a contaminant that is allowed in drinking water.  Primary MCLs are set as close to the PHGs (or MCLGs) as is economically and technologically feasible. Secondary MCLs are set to protect the odor, taste, and appearance of drinking water.  
+
+</details>
+
+***  
+
+<details>
+<summary>**What's the difference between '*In compliance*,' '*Out of compliance*,' and '*Returned to Compliance*'?**</summary>  
+
+These are designations determined by a lengthy process involving state regulators and water agencies. Below are definitions of these three conditions:  
+
+* **In Compliance**: If a water system is "In Compliance" it means that the system is achieving compliance with the federal/state primary drinking water standards (i.e. MCL and TT requirements). For chronic contaminants, compliance is defined based on the running annual average (RAA), as specified in Section 64432 of Title 22 of the California Code of Regulations (CCR). For nitrate, compliance is based on quarterly monitoring as specified in Section 64432.1 of Title 22 of the CCR. To find out more about the types of contaminants and their associated MCLs, refer to the table of [Maximum Contaminant Levels and Regulatory Dates for Drinking Water](http://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/dwdocuments/MCLsEPAvsDWP-2014-07-01.pdf). There are certain state drinking water standards, such as perchlorate, which are more stringent than the federal drinking water standards.  
+
+* **Out of Compliance**: If a water system is "Out-of-Compliance" it means that the system is currently in violation of one or more federal/state primary drinking water standard (i.e. MCL and TT requirements) and an enforcement action has been taken.  
+
+* **Returned to Compliance**: If a water system has returned to compliance since January 1, 2012 it means the water system now meets federal/state primary drinking water standards (i.e. MCL and TT requirements), but did not in the recent past.  
+
+</details>  
+
+***  
+
+<details>
+<summary>**On the CCR pages in the barplot and table, what does `XMOD` mean?**</summary>    
+
+`XMOD` indicates additional qualifiers on the data.  
+
+* `<`: the measured amount did not constitute a chemical detection  
+* `V`: valid data  
+* `-`: the data can be negative (e.g. radionuclides and Langelier index)  
+* `F`: false positive  
+* `I`: invalidated  
+* `Q`: questionable 
+
+</details>
+
+
+
+
+***
+
+<details>
+<summary>**Did the California state government make this website?**</summary>  
+
+No. California state government datasets were used to make this website, but it is not endorsed by the government.  
+
+This website is provided as is
+
+</details>
+
+***
+
+<details>
+<summary>**What water quality metrics does this website calculate?**</summary>  
+
+This website only calculates one metric, and that is the average (mean) result of each detected contaminant (excluding water quality indicators), over the past 2 years.  
+
+All other data shown are simply ported from exisiting public data sources, and not modified in any way.  
+
+</details>
+
+***  
+
+
+<details>
+<summary>**How does this website work?**</summary>  
+
+Water quality data is continuously gathered, submitted to the state, and available in open databases. This web-tool mines these datasets in near real-time to produce online water quality reports for all [**community water systems**](https://www.waterboards.ca.gov/water_issues/programs/hr2w/docs/general/faqs_6-05-2018.pdf) in California. A community water system is a PWS that serves at least 15 service connections used by yearlong residents, or regularly serves at least 25 yearlong residents of the area served by the system. These water systems primarily serve cities, neighborhoods, schools and businesses.  
+
+We believe that this information will provide consumers with the most up-to-date information, and empower managers to swiftly respond to water quality threats in the communities they serve.  
+
+</details>
+
+***  
+
+<details>
+<summary>**Where can I learn more about my water quality?**</summary>
+
+* The [frequently asked questions PDF](https://www.waterboards.ca.gov/water_issues/programs/hr2w/docs/general/faqs_6-05-2018.pdf) created by the state of California is a good place to start. may be found in this PDF.  
+
+* The [Human Right to Water Portal](https://www.waterboards.ca.gov/water_issues/programs/hr2w/) is another great resource.  
+
+</details>
+
+***
+
+
+<details>
+<summary>**I'm unsure which exact community water system serves my home. How do I figure that out?**</summary>
+
+* The best way to figure out exactly where your water comes from is to contact your water utility company.  
+
+* On the [homepage](https://caccr.github.io), you might also try searching the table <i class="fas fa-table" style = "color: #ecbb33"></i> for your county or city to see what community water systems appear.  
+
+</details>
+
+
+
+*** 
+
+<details>
+<summary>**Where does the data come from?**</summary>  
+
+The data used to build these reports are gathered and curated by the California State Water Resources Control Board, and freely available online. You can find water quality data [here](https://www.waterboards.ca.gov/water_issues/programs/hr2w/) and [here](https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/edtlibrary/), and water system spatial boundaries [here](https://data.ca.gov/dataset/drinking-water-water-system-service-area-boundaries).  
+
+</details>
+
+***
+
+
+<details>
+<summary>**Can I fork this project and add to it?**</summary>  
+
+Absolutely. The code underlying this webpage can be found [here](https://github.com/caccr/caccr.github.io). The code that creates the reports and webpages can be found [here](https://github.com/CAWaterBoardDataCenter/CCR_Application). 
+
+This project adheres to the MIT License:  
+
+> Copyright (c) 2019 Rich Pauloo, richpauloo.github.io </br> </br>
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: </br> </br> 
+> The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. </br> </br> 
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+</details>
+
+
+

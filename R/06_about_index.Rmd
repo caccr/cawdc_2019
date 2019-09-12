@@ -2,24 +2,34 @@
 output: html_document
 ---
 
+## Motivation
 
-## About
+When we travel somewhere new, checking the weather is simple. But checking the water quality is not.  
 
-Every year, nearly 40 million Californians turn on the tap to receive water. For the great majority of Californians, this water is supplied by a public water system. The state government of California requires public water systems to independently compile water quality data for their service area, and send out annual water quality reports, also called consumer confidence reports (CCR) that inform customers on the quality of water they deliver. Although these reports are delivered annually, water quality data is continuously gathered, submitted to the state, and available in open databases. This web-tool mines these datasets in near real-time to produce online water quality reports for all water systems in California. We believe that this information will provide consumers with the most up-to-date information, and empower managers to swiftly respond to water quality threats in the communities they serve.  
+This webpsite is a "weather app for water quality" that makes public water quality data accessible and understandable, enabling Californians to check public drinking water quality in their hometown, place of work, school, and anywhere they may travel.  
+
+***  
+
+## Background
+
+Every year, nearly 40 million Californians turn on the tap to receive water. For the great majority of Californians, this water is supplied by a public water system. The state government of California requires public water systems to independently compile water quality data for their service area, and send out annual water quality reports, also called consumer confidence reports (CCR) that inform customers on the quality of water they deliver. These reports are delivered annually, and suffer from a lack of consistency across agencies. Near-real-time, standardized, and easy to understand CCRs would improve the public's understanding of the water they buy and consume.    
+
 
 ***
 
 ## Open data and code
 
-The data used to build these reports are gathered and curated by the California State Water Resources Control Board, and freely available online. You can find water quality data [here](https://www.waterboards.ca.gov/water_issues/programs/hr2w/) and [here](https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/edtlibrary/), and water system spatial boundaries [here](https://data.ca.gov/dataset/drinking-water-water-system-service-area-boundaries). Another online version of CCRs, and a statewide water system search can be found [here](https://sdwis.waterboards.ca.gov/PDWW/JSP/WaterSystemDetail.jsp?tinwsys_is_number=4424&tinwsys_st_code=CA&wsnumber=CA4510005).  
+The data used to build these reports are gathered and curated by the California State Water Resources Control Board, and available to the public online. You can find water quality data [here](https://www.waterboards.ca.gov/water_issues/programs/hr2w/) and [here](https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/edtlibrary/), and water system spatial boundaries [here](https://data.ca.gov/dataset/drinking-water-water-system-service-area-boundaries). Another online version of CCRs, and a statewide water system search can be found [here](https://sdwis.waterboards.ca.gov/PDWW/JSP/WaterSystemDetail.jsp?tinwsys_is_number=4424&tinwsys_st_code=CA&wsnumber=CA4510005).  
 
-The code underlying this webpage can be found [here](https://github.com/caccr/caccr.github.io). The code that creates the reports and webpages can be found [here](https://github.com/CAWaterBoardDataCenter/CCR_Application). For questions related to the codebase, contact the principal developer of this project, [Rich Pauloo](richpauloo.github.io).   
+The code underlying this webpage can be found [here on Github](https://github.com/caccr/caccr.github.io). The code that creates the reports and webpages can be found [here on Github](https://github.com/caccr/cawdc_2019). For questions related to the codebase, contact the principal developer of this project, [Rich Pauloo](richpauloo.github.io).   
 
 ***  
 
-## Frequently Asked Questions
+## Frequently asked questions
 
-The answer to [frequently asked questions may be found in this PDF](https://www.waterboards.ca.gov/water_issues/programs/hr2w/docs/general/faqs_6-05-2018.pdf).  
+[Click here to find answers to frequently asked questions about this website](https://caccr.github.io/faq/).  
+
+The answer to [frequently asked questions about water quality in the state of California may be found in this PDF](https://www.waterboards.ca.gov/water_issues/programs/hr2w/docs/general/faqs_6-05-2018.pdf).  
 
 
 
@@ -27,5 +37,4 @@ The answer to [frequently asked questions may be found in this PDF](https://www.
 
 ## Acknowledgements
 
-We acknowledge the California State Water Resources Control Board for the original idea to pursue CCRs as a project, and the West Big Data Hub for convening the datathon where the first lines of code of this project were written. Many water quality experts in the California state government helped interpret state water quality databases, and reviewed early versions of this online tool. In particular we thank: xyz. Internet of Water...
-
+We acknowledge the [California State Water Resources Control Board](https://www.waterboards.ca.gov/) for the original idea to pursue CCRs as a project, and the [West Big Data Hub](https://westbigdatahub.org/) for convening the datathon where the first lines of code of this project were written. We thank water quality experts in the California state government who helped interpret state water quality databases, and the [Internet of Water](https://internetofwater.org/) for helping review early versions of this website.    

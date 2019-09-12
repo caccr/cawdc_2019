@@ -68,8 +68,8 @@ psid_contact$WS_URL <- NULL
 
 psid_contact$HD_EMAIL <- ifelse(is.na(psid_contact$HD_EMAIL), 
                                 NA, 
-                                paste0("<A HREF='mailto:", psid_contact$HD_EMAIL, 
-                                "'", psid_contact$HD_EMAIL, "</A>")
+                                paste0("<a href='mailto:", psid_contact$HD_EMAIL, 
+                                "' target='_blank'>", psid_contact$HD_EMAIL, "</a>")
 )
 
 psid_contact$HD_ADDRESS <- ifelse(is.na(psid_contact$HD_ADDRESS),
@@ -79,6 +79,18 @@ psid_contact$HD_ADDRESS <- ifelse(is.na(psid_contact$HD_ADDRESS),
                                          "' target='_blank'>",
                                          psid_contact$HD_ADDRESS,
                                          "</a></b>")
+)
+
+psid_contact$HD_PHONE <- ifelse(is.na(psid_contact$HD_PHONE), 
+                                NA, 
+                                paste0("<a href='tel:1-", psid_contact$HD_PHONE, 
+                                       "' target='_blank'>", psid_contact$HD_PHONE, "</a>")
+)
+
+psid_contact$WS_PHONE <- ifelse(is.na(psid_contact$WS_PHONE), 
+                                NA, 
+                                paste0("<a href='tel:1-", psid_contact$WS_PHONE, 
+                                       "' target='_blank'>", psid_contact$WS_PHONE, "</a>")
 )
 
 psid_contact$PRIM_STA_C <- substr(psid_contact$PRIM_STA_C, 3, 9)
@@ -171,7 +183,7 @@ counties <- zz$`Principal County Served`
 
 # create directories for files
 #for(i in 1:length(psids)){
-for(i in 1:20){
+for(i in 1:10){
   dir.create(paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i]))
 }
 
@@ -184,7 +196,7 @@ gen_reports <- function(x,y,w,k) {
 }
 
 # write the CCR index.htmls  
-mapply(gen_reports, psids[1:20], nams[1:20], cities[1:20], counties[1:20])
+mapply(gen_reports, psids[1:10], nams[1:10], cities[1:10], counties[1:10])
 
 # add navbar to each file by reading in each index.html, and splicing in
 # the appropriate HTML, given in `nav_bar_sub_head`
@@ -192,7 +204,7 @@ navbar <- read_lines("/Users/richpauloo/Github/cawdc_2019/etc/nav_bar_sub_head")
 
 # read in the HTML files, insert the navbar code, then re-write the files
 #for(i in 1:length(psids)){
-for(i in 1:20){
+for(i in 1:10){
   index <- read_lines(paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], "/index.html"))
   index <- c(index[1:9], navbar, index[10:length(index)])
   write_lines(index, paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], "/index.html"))
@@ -226,3 +238,12 @@ rmarkdown::render(input = "/Users/richpauloo/Desktop/ca_water_datathon/07_error_
 # select(chem_tp_min_2019, PRIM_STA_C, `Water System Name`) %>% 
 #   distinct() %>% 
 #   write_rds(., "/Users/richpauloo/Desktop/ca_water_datathon/psid_name_key.rds")
+
+##########################################################################
+# write the faq index.html file and add the navbar
+##########################################################################
+rmarkdown::render(input = "/Users/richpauloo/Github/cawdc_2019/R/08_faq.Rmd", 
+                  output_file = "/Users/richpauloo/Github/jmcglone.github.io/faq/index.html")
+index <- read_lines("/Users/richpauloo/Github/jmcglone.github.io/faq/index.html")
+index <- c(index[1:9], navbar, index[10:length(index)])
+write_lines(index, "/Users/richpauloo/Github/jmcglone.github.io/faq/index.html")

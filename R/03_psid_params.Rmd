@@ -1,6 +1,6 @@
 ---
-title: "`r paste('Consumer Confidence Report for PWS: ', params$psid)`"
-subtitle: "`r paste0(params$nam, ', ', params$city, ' (', params$county, ' CO.)')`"
+title: "`r paste(params$nam, ' Consumer Confidence Report')`"
+subtitle: "`r paste0('PSID: ', params$psid, '  |  ', params$city, ', ', params$county, ' CO.')`"
 date: "`r paste0('For the period from ', paste0('2017-01-01 to ', Sys.Date(), '.'))`"
 output: 
   html_document:
@@ -39,8 +39,10 @@ cd <- filter(psid_contact, PRIM_STA_C == params$psid)
 
 # vars to report
 wst <- formatC(d$`Primary Water Source Type`[1], big.mark = ",")
-tsc <- formatC(d$`Total Number of Service Connections`[1], big.mark = ",")
-pop <- formatC(d$`Total Population`[1], big.mark = ",")
+tsc <- formatC(pull(filter(ep@data, WATER_SYST == params$psid), Service_Co)[1], 
+               big.mark = ",", format = "d")
+pop <- formatC(as.numeric(pull(filter(ep@data, WATER_SYST == params$psid), POPULATION)[1]), 
+               big.mark = ",", format = "d")
 
 # map: in order for this to work, `04_generate_ccrs.R` needs to read in
 # sa as a sf object, so that it's subsettable by `dplyr::filter()`
@@ -60,8 +62,8 @@ my_water_system <- filter(st_as_sf(ep), WATER_SYST == params$psid) %>%
 l1a <- "Of the "
 l1b <- " chemicals tested for in your water system, "
 l1c <- " **chemicals were detected**, and " 
-l1d <- " **average annual chemical findings exceeded their MCL, though this dos not necessarily constitute an MCL violation [$^*$](#vio-link)**. <br>"
-l2 <- "In the plot below, the Maximum Contaminant Level (MCL) is shown as a black horizontal dashed line. Each contaminant tested for in your water utility is represented by a vertical bar, and the height of the bar indicates the level of contaminantion of that sample. Any contaminant at or exceeding the black horizontal dashed line indicates contaminated water, and values under the black line indicate **safe** drinking water. <br><br> Hover over the bars to see more information for each contaminant."
+l1d <- " **average chemical findings exceeded their MCL, though exceedance alone does not constitute a violation [$^*$](#vio-link)**. <br>"
+l2 <- "In the plot below, the Maximum Contaminant Level (MCL) is shown as a black horizontal dashed line. Each vertical bar is a contaminant that was detected. The higher the bar, the higher the average level of that contaminant over the roughly 2 year period of record (since 2017-01-01). Any contaminant at or above the black horizontal dashed line indicates contaminated water. <br><br> Hover over the bars to see more information."
 
 
 # text for psids with detects and non-detects
@@ -77,6 +79,10 @@ l6b <- "** water quality indicators were tested for in your system and, may have
 
 # exceedance note - deprecated
 # l7 <- "If a contaminant has an exceedance of 999%, this indicates a detection for which the MCL is 0. Any number divided by 0 is infinite, thus it is assigned an arbitarty large value (999) to indicate exceedance." 
+
+# new line that removes unnecessary text vom of all chemical nondetects.
+l7 <- " other chemicals were tested for and NOT detected, thus these chemicals are not included in the chart above."
+l8 <- "** water quality indicators were tested for and may have been detected, though they pose no serious human health hazard (MCL = 0). They are reported in the [table below](#table)."
 
 
 # plotly buttons to remove
@@ -124,20 +130,31 @@ ee <- nrow(filter(dg1, prop_mcl >= 100))
 
 # violation status
 vio <- filter(ep@data, WATER_SYST == params$psid) %>% pull(GIS_STATUS)
-viostr <- paste0(" This water system is **", vio, "**")  
+
 if(length(vio) == 1){
   if(vio == "RETURNED TO COMPLIANCE"){
     viostr <- paste0(" This water system has **", vio, "**")
   }
 }
-if(length(vio)==0) {viostr <- " Compliance status is **UNKNOWN** for this water system"}
+
+if(length(vio) == 0){ 
+  viostr <- " Compliance status is **UNKNOWN** for this water system"
+}
+
 contactstr <- '[Contact your water system](#contact-link) for more information.'
 
 if(length(vio) == 1){ 
-  if(vio == "IN COMPLIANCE") viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "green"), viostr)
-  if(vio == "OUT-OF-COMPLIANCE") viostr <- paste0(" ", fontawesome::fa("exclamation-circle", fill = "red"), viostr)
-  if(vio == "RETURNED TO COMPLIANCE") viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "green"), viostr)
+  if(vio == "IN COMPLIANCE") 
+    viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "green"), 
+                     paste0(" This water system is **<font color = 'green'>", vio, "</font>**") )
+  if(vio == "OUT-OF-COMPLIANCE") 
+    viostr <- paste0(" ", fontawesome::fa("exclamation-circle", fill = "red"), 
+                     paste0(" This water system is **<font color = 'red'>", vio, "</font>**") )
+  if(vio == "RETURNED TO COMPLIANCE") 
+    viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "orange"), 
+                     paste0(" This water system is **<font color = 'orange'>", vio, "</font>**") )
 }
+
 if(length(vio) == 0){
   viostr <- paste0(" ", fontawesome::fa("question-circle", fill = "red"), viostr)
 }
@@ -149,7 +166,7 @@ if(length(vio) == 0){
 
 ## What does this report mean? 
 
-`r paste0('Drinking water quality in your water system is tested for many chemical constituents as required by state and federal regulations. This report shows monitoring results for the period from 2017-01-01 to ', Sys.Date(), '.')`
+This report contains important information about drinking water quality in your water system.  
 
 <!-- * more lay interpretation for people and how it applies to user. Scope language is in [this template](https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/ccr/3ccr_swsrpttemplate_for_2018_ccr_english_20190219.docx).  -->
 
@@ -163,27 +180,6 @@ Este informe contiene información muy importante sobre su agua para beber. Favo
 
 ## `r viostr`
 
-**`r params$nam`** is located in **`r paste0(params$city, ' (', params$county, ' CO.)')`**. 
-
-The primary water source type is **`r wst`**. 
-
-This water system services **`r tsc`** connections, and serves a total population of **`r pop`** individuals.
-
-```{r, out.width="100%"}
-if(nrow(my_water_system) > 0 ){
-  mapview(my_water_system, legend = FALSE)
-}
-```
-
-
-
-***  
-
-
-<!-- ## How clean is my water?  -->
-
-
-## Chemicals detected
 
 `r if(length(vio) == 0) contactstr`
 
@@ -234,29 +230,11 @@ if(nrow(dg1) > 0){
 }
 ```
 
-`r if(nrow(dg1) > 0 & nrow(dg2) > 0) paste0("**", nrow(dg2), "**", l3, paste(dg2$CHEMICAL__, collapse = ", "), "." , l4) `
+`r if(nrow(dg1) > 0 & nrow(dg2) > 0) paste0("**", nrow(dg2), "**", l7)`
 
-`r if(nrow(dg1) == 0 & nrow(dg2) > 0) paste0(l5, "<br><br>", l6, paste(dg2$CHEMICAL__, collapse = ", "), ".") `
-
-`r if(nrow(wqi) > 0) paste0(l6a, nrow(wqi), l6b, "<br><br>", paste(wqi$CHEMICAL__, collapse = ", "), ".")`
-
-
+`r if(nrow(wqi) > 0) paste0("**", nrow(wqi), l8)`
 
 ***  
-
-
-## Actions taken to address MCL exceedances _[in progress]_ 
-<!-- ## r if(nrow(violations) > 0) paste('Actions taken to assess violations') -->
-
-When a measured contaminant exceeds the MCL, a set of regulatory actions is taken to improve water quality. All regulatory actions taken during the period of this report are shown below:  
-
-Table or text summarizing this.  
-
-
-
-***  
-
-
 
 ## Explore/download data {#table}
 
@@ -270,10 +248,35 @@ dg %>%
             colnames = c("CHEMICAL", "SAMPLE_MEAN","MCL","UNIT", "XMOD"),
             extensions = 'Buttons', 
             options = list(dom = 'Bfrtip', 
-                           buttons = c('excel', "csv")))
+                           buttons = c('excel', "csv"),
+                           pageLength = 25))
 ```
 
 *** 
+
+<!-- `r if(nrow(dg1) > 0 & nrow(dg2) > 0) paste0("**", nrow(dg2), "**", l3, paste(dg2$CHEMICAL__, collapse = ", "), "." , l4) ` -->
+
+<!-- `r if(nrow(dg1) == 0 & nrow(dg2) > 0) paste0(l5, "<br><br>", l6, paste(dg2$CHEMICAL__, collapse = ", "), ".") ` -->
+
+<!-- `r if(nrow(wqi) > 0) paste0(l6a, nrow(wqi), l6b, "<br><br>", paste(wqi$CHEMICAL__, collapse = ", "), ".")` -->
+
+
+
+
+
+<!-- ## Actions taken to address MCL exceedances _[in progress]_  -->
+<!-- ## r if(nrow(violations) > 0) paste('Actions taken to assess violations') -->
+
+<!-- When a measured contaminant exceeds the MCL, a set of regulatory actions is taken to improve water quality. All regulatory actions taken during the period of this report are shown below:   -->
+
+<!-- Table or text summarizing this.   -->
+
+
+
+<!-- ***   -->
+
+
+
 
 <!-- ## How does my water compare to county and statewide averages? -->
 
@@ -289,50 +292,38 @@ dg %>%
 
 
 
-## More information
+## About
 
-### *Contact Water System* {#contact-link}
+**`r params$nam`**, located in **`r paste0(params$city, ' (', params$county, ' CO.)')`**:   
 
-##### `r params$nam`  
-`r paste0(" ", fontawesome::fa("map-marker", fill = "red"), " : ", cd$WS_ADDRESS)`  
-`r paste0(" ", fontawesome::fa("phone", fill = "blue"), ": ", cd$WS_PHONE)`  
+`r paste0(' ', fontawesome::fa("users", fill = "#8105D8"))` services **`r tsc`** connections to serve a total population of **`r pop`** individuals.  
 
-### *Contact Health System*
+`r paste0(' ', fontawesome::fa("tint", fill = "#2B76CC"))` has a primary water source type of **`r wst`**.  
 
-##### `r cd$HEALTH_DISTRICT`
+***  
 
-`r paste0(" ", fontawesome::fa("map-marker", fill = "red"), " : ", cd$HD_ADDRESS)`  
-`r paste0(" ", fontawesome::fa("phone", fill = "blue"), ": ", cd$HD_PHONE)`  
-`r paste0(" ", fontawesome::fa("paper-plane", fill = "green"), ": ", cd$HD_EMAIL)` 
+### Contact {#contact-link}
+
+> `r paste0(params$nam, "<br>", fontawesome::fa("map-marker", fill = "red"), "   ", cd$WS_ADDRESS, "<br>", " ", fontawesome::fa("phone", fill = "blue"), "   ", cd$WS_PHONE)`  
+
+> `r paste0("Health Agency: ", cd$HEALTH_DISTRICT, "<br>", fontawesome::fa("map-marker", fill = "red"), "   ", cd$HD_ADDRESS, "<br>", " ", fontawesome::fa("phone", fill = "blue"), "   ", cd$HD_PHONE, "<br>", " ", fontawesome::fa("paper-plane", fill = "green"), "   ", cd$HD_EMAIL)` 
+
+```{r, out.width="100%", out.height="300px"}
+if(nrow(my_water_system) > 0 ){
+  mapview(my_water_system, legend = FALSE, layer.name = params$nam)
+}
+```
+
+***  
 
 ### Disclaimer
 
-This Consumer Confidence Report was automatically generated, and hence, the data herein may be incomplete or inaccurate. The authors claim no liability or responsibility for data quality. This data represents the average result of all post-treatment samples from the period from `r paste0(paste0(lubridate::year(Sys.Date()), '-01-01'), ' to ', Sys.Date())`. For questions about your local water quality, contact your water system.  
+This Consumer Confidence Report was automatically generated, and hence, the data herein may be incomplete or inaccurate. The authors claim no liability or responsibility for data quality, and this data product falls under the [MIT License](https://github.com/caccr/cawdc_2019/LICENSE). This data represents the average result of all post-treatment samples from the period from `r paste0(paste0(lubridate::year(Sys.Date()), '-01-01'), ' to ', Sys.Date())`.  
 
+**For questions about your local water quality, contact your water system.**    
 
-### Frequently Asked Questions {#vio-link}
+***
 
-#### *Important Vocabulary*
+### FAQ {#vio-link}
 
-* **Maximum Contaminant Level (MCL)** refers to the highest level of a contaminant that is allowed in drinking water.  Primary MCLs are set as close to the PHGs (or MCLGs) as is economically and technologically feasible. Secondary MCLs are set to protect the odor, taste, and appearance of drinking water.  
-
-* **In Compliance**: If a water system is "In Compliance" it means that the system is achieving compliance with the federal/state primary drinking water standards (i.e. MCL and TT requirements). For chronic contaminants, compliance is defined based on the running annual average (RAA), as specified in Section 64432 of Title 22 of the California Code of Regulations (CCR). For nitrate, compliance is based on quarterly monitoring as specified in Section 64432.1 of Title 22 of the CCR. To find out more about the types of contaminants and their associated MCLs, refer to the table of [Maximum Contaminant Levels and Regulatory Dates for Drinking Water](http://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/dwdocuments/MCLsEPAvsDWP-2014-07-01.pdf). There are certain state drinking water standards, such as perchlorate, which are more stringent than the federal drinking water standards.  
-
-* **Out of Compliance**: If a water system is "Out-of-Compliance" it means that the system is currently in violation of one or more federal/state primary drinking water standard (i.e. MCL and TT requirements) and an enforcement action has been taken.  
-
-* **Returned to Compliance**: If a water system has returned to compliance since January 1, 2012 it means the water system now meets federal/state primary drinking water standards (i.e. MCL and TT requirements), but did not in the recent past.  
-
-
-#### *Explanation of terms in this report*
-
-In the barplot and table above, `XMOD` indicates additional qualifiers on the data.  
-
-* `<`: the measured amount did not constitute a chemical detection  
-* `V`: valid data  
-* `-`: the data can be negative (e.g. radionuclides and Langelier index)  
-* `F`: false positive  
-* `I`: invalidated  
-* `Q`: questionable 
-
-
-
+To see frequently asked question about this CCR, [visit the FAQ](https://caccr.github.io/faq/).  
