@@ -182,8 +182,8 @@ counties <- zz$`Principal County Served`
 ##########################################################################
 
 # create directories for files
-#for(i in 1:length(psids)){
-for(i in 1:10){
+for(i in 11:length(psids)){
+#for(i in 1:10){
   dir.create(paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i]))
 }
 
@@ -196,7 +196,12 @@ gen_reports <- function(x,y,w,k) {
 }
 
 # write the CCR index.htmls  
-mapply(gen_reports, psids[1:10], nams[1:10], cities[1:10], counties[1:10])
+mapply(gen_reports, 
+       psids[11:length(psids)], 
+       nams[11:length(psids)], 
+       cities[11:length(psids)],
+       counties[11:length(psids)]
+)
 
 # add navbar to each file by reading in each index.html, and splicing in
 # the appropriate HTML, given in `nav_bar_sub_head`
@@ -204,11 +209,12 @@ navbar <- read_lines("/Users/richpauloo/Github/cawdc_2019/etc/nav_bar_sub_head")
 
 # read in the HTML files, insert the navbar code, then re-write the files
 #for(i in 1:length(psids)){
-for(i in 1:10){
+for(i in 11:length(psids)){
   index <- read_lines(paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], "/index.html"))
   index <- c(index[1:9], navbar, index[10:length(index)])
   write_lines(index, paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], "/index.html"))
 }
+textme()
 
 
 ##########################################################################

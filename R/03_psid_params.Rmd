@@ -152,7 +152,7 @@ if(length(vio) == 1){
                      paste0(" This water system is **<font color = 'red'>", vio, "</font>**") )
   if(vio == "RETURNED TO COMPLIANCE") 
     viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "orange"), 
-                     paste0(" This water system is **<font color = 'orange'>", vio, "</font>**") )
+                     paste0(" This water system has **<font color = 'orange'>", vio, "</font>**") )
 }
 
 if(length(vio) == 0){
