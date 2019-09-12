@@ -1,5 +1,7 @@
 # README
 
+*scripts written by Rich Pauloo*  
+
 The scripts in this folder fall into 3 categories.  
 
 ### Download and clean
@@ -10,14 +12,15 @@ The scripts in this folder fall into 3 categories.
 
 ### Generate landing page and individual reports
 
-`03_psid_params.Rmd`  
-`04_generate_ccrs.R`  
-`05_master_index.Rmd`  
-`06_about_index.Rmd`  
-`07_error_404.Rmd`  
+`03_psid_params.Rmd` - individual CCRs  
+`04_generate_ccrs.R` - master file that loads data and writes to correct folders  
+`05_master_index.Rmd` - landing page   
+`06_about_index.Rmd` - about page  
+`07_error_404.Rmd` - 404 page   
+`08_faq.Rmd` - faq page  
 
 
-### Archive
+### Depricated
 
 `01_generate_ccr.Rmd`  
 
