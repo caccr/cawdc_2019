@@ -211,7 +211,7 @@ chem_tp_min_2017 %>%
   
   # add urls
   mutate(URL = paste0("<b><a href='https://caccr.github.io/ccrs/", 
-                      PRIM_STA_C, ".html/'>VIEW CCR</a></b>"),
+                      PRIM_STA_C, ".html'>VIEW CCR</a></b>"),
          # make the PWSID searchable
          PRIM_STA_C = as.numeric(PRIM_STA_C)) %>% 
   

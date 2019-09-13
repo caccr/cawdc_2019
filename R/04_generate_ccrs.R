@@ -184,7 +184,7 @@ ep_with_chem_dat <- ep@data$WATER_SYST[ ep@data$WATER_SYST %in% psids ]
 ep@data <- ep@data %>% 
   mutate(url = ifelse(WATER_SYST %in% ep_with_chem_dat,
                       paste0("<b><a href='https://caccr.github.io/ccrs/", 
-                             ep$WATER_SYST, ".html/'>VIEW CCR</a></b>"),
+                             ep$WATER_SYST, ".html'>VIEW CCR</a></b>"),
                       paste0("CRR unavailable.")))
 
 
