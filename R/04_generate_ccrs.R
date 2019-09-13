@@ -146,9 +146,6 @@ ep <- list.files("/Users/richpauloo/Desktop/ca_water_datathon/shp/",
   spTransform('+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs')
 
 ep$WATER_SYST <- substr(ep$WATER_SYST, 3, 9)
-ep$url <- paste0("<b><a href='https://caccr.github.io/ccrs/", 
-                 ep$WATER_SYST,
-                 "/' target='_blank'>CLICK TO VIEW CCR</a></b>")
 
 
 ##########################################################################
@@ -176,31 +173,42 @@ counties <- zz$`Principal County Served`
 
 
 ##########################################################################
+# psids from exceedance point data via Human Right to Water
+# that have chemical data associated with them get a URL, and those
+# without chemical data do not
+##########################################################################
+ep_with_chem_dat <- ep@data$WATER_SYST[ ep@data$WATER_SYST %in% psids ]
+
+# eps with chemical data in the past 2 years, and thus a CCR, get a URL
+# eps without chemical data, and no CCR don't get a URL
+ep@data <- ep@data %>% 
+  mutate(url = ifelse(WATER_SYST %in% ep_with_chem_dat,
+                      paste0("<b><a href='https://caccr.github.io/ccrs/", 
+                             ep$WATER_SYST, ".html/'>VIEW CCR</a></b>"),
+                      paste0("CRR unavailable.")))
+
+
+##########################################################################
 # generate ccrs by first calling `03_psid_params` and passing this script
 # a psid. `03_psid_params` depends on the object `chem_tp`, which is loaded
 # in this script
 ##########################################################################
 
-# create directories for files
-for(i in 11:length(psids)){
-#for(i in 1:10){
-  dir.create(paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i]))
-}
 
 # function to generate CCR index.htmls  
 gen_reports <- function(x,y,w,k) {
   rmarkdown::render(input = "/Users/richpauloo/Github/cawdc_2019/R/03_psid_params.Rmd", 
-                    output_file = sprintf("/Users/richpauloo/Github/jmcglone.github.io/ccrs/%s/index.html", x),
+                    output_file = sprintf("/Users/richpauloo/Github/jmcglone.github.io/ccrs/%s.html", x),
                     params = list(psid = x, nam = y,
                                   city = w, county = k))
 }
 
 # write the CCR index.htmls  
 mapply(gen_reports, 
-       psids[11:length(psids)], 
-       nams[11:length(psids)], 
-       cities[11:length(psids)],
-       counties[11:length(psids)]
+       psids[1:length(psids)], 
+       nams[1:length(psids)], 
+       cities[1:length(psids)],
+       counties[1:length(psids)]
 )
 
 # add navbar to each file by reading in each index.html, and splicing in
@@ -209,12 +217,11 @@ navbar <- read_lines("/Users/richpauloo/Github/cawdc_2019/etc/nav_bar_sub_head")
 
 # read in the HTML files, insert the navbar code, then re-write the files
 #for(i in 1:length(psids)){
-for(i in 11:length(psids)){
-  index <- read_lines(paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], "/index.html"))
+for(i in 1:length(psids)){
+  index <- read_lines(paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], ".html"))
   index <- c(index[1:9], navbar, index[10:length(index)])
-  write_lines(index, paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], "/index.html"))
+  write_lines(index, paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], ".html"))
 }
-textme()
 
 
 ##########################################################################
