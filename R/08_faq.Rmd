@@ -53,8 +53,6 @@ These are designations determined by a lengthy process involving state regulator
 
 No. California state government datasets were used to make this website, but it is not endorsed by the government.  
 
-This website is provided as is
-
 </details>
 
 ***
@@ -85,9 +83,9 @@ We believe that this information will provide consumers with the most up-to-date
 <details>
 <summary>**Where can I learn more about my water quality?**</summary>
 
-* The [frequently asked questions PDF](https://www.waterboards.ca.gov/water_issues/programs/hr2w/docs/general/faqs_6-05-2018.pdf) created by the state of California is a good place to start. may be found in this PDF.  
+The [frequently asked questions PDF](https://www.waterboards.ca.gov/water_issues/programs/hr2w/docs/general/faqs_6-05-2018.pdf) created by the state of California is a good place to start. may be found in this PDF.  
 
-* The [Human Right to Water Portal](https://www.waterboards.ca.gov/water_issues/programs/hr2w/) is another great resource.  
+The [Human Right to Water Portal](https://www.waterboards.ca.gov/water_issues/programs/hr2w/) is another great resource.  
 
 </details>
 
@@ -97,9 +95,23 @@ We believe that this information will provide consumers with the most up-to-date
 <details>
 <summary>**I'm unsure which exact community water system serves my home. How do I figure that out?**</summary>
 
-* The best way to figure out exactly where your water comes from is to contact your water utility company.  
+The best way to figure out exactly where your water comes from is to contact your water utility company.  
 
-* On the [homepage](https://caccr.github.io), you might also try searching the table <i class="fas fa-table" style = "color: #ecbb33"></i> for your county or city to see what community water systems appear.  
+On the [homepage](https://caccr.github.io), you might also try searching the table <i class="fas fa-table" style = "color: #ecbb33"></i> for your county or city to see what community water systems appear.  
+
+</details>
+
+
+
+*** 
+
+<details>
+<summary>**In the map, why does it say that there's no CCR available for my water system?**</summary>
+
+CCRs are generated for water systems for which available data since 2019-01-01 is available. If state government databases lack water quality information for a particular system, this website is unable to generate a CCR. 
+
+However, you should be able to view the compliance status of the water system in the map. To learn more about water quality in your system, or obtain a CCR, contact your water utility company.    
+
 
 </details>
 
@@ -133,4 +145,11 @@ This project adheres to the MIT License:
 </details>
 
 
+<br> 
+
+<br>
+
+<br> 
+
+<br>
 
