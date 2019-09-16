@@ -1,5 +1,7 @@
 # CCR Application
 
+[![](example.gif)](https://caccr.github.io)
+
 Scripts related to [caccr.github.io](caccr.github.io), a near-real-time water quality visualization tool for California community water systems.  
 
 `Python` - webscraping scripts  
