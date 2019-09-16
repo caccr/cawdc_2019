@@ -1,5 +1,15 @@
 **compiled by Andrew Essin, 2019-08-22**  
 
+
+**tl;dr**  
+
+
+The Human Right to Water (HRW) website includes data on water systems (PWSs) including those that go into or out of compliance, and whether the water board takes action.  Beyond this, the data are uninformative from the consumer's point of view, and it would be a question of policy to decide what detail beyond this to include on a uniform CCR if the information were available.  One option would be to use data directly from EPA’s SDWIS database, which classifies violations as major or minor, and health-related or not.  One could also include the numeric scoring scheme described here (https://www.epa.gov/sites/production/files/2015-09/documents/drinking-water-erp-2009.pdf).
+
+
+***
+
+
 The Human Right to Water (HRW) website includes data on water systems (PWSs) including those that in compliance or out of compliance, and what actions have been taken by the water board when a system goes out of compliance.   
 
 The big question is, what does any of this mean?  
