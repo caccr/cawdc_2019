@@ -4,31 +4,46 @@
 
 .topnav {
   overflow: hidden;
-  background-color: #3b84df;
+  background-color: #414141;
+  position: fixed;
+  width: 100%;
+  top: 10;
+  z-index: 9999999999999999;
 }
 
 .topnav a {
   float: left;
-  color: #f2f2f2;
-  text-align: center;
+  color: #ffffff;
+  text-align: left;
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
+  z-index: 9999999999999999;
+  width: 100%;
 }
 
 .topnav a:hover {
-  background-color: #1e4270;
-  color: white;
+  background-color: #414141;
+  color: #ffffff;
+  z-index: 9999999999999999;
 }
 
 .topnav a.active {
-  background-color: #3b84df;
-  color: white;
+  background-color: #ffffff;
+  color: #414141;
+  z-index: 9999999999999999;
 }
 </style>
 </head>
 <body>
 
+
 <div class="topnav">
   <a href="https://caccr.github.io">California Consumer Confidence Reports</a>
 </div>
+
+<br><br><br>
+
+
+
+

@@ -4,7 +4,6 @@ subtitle: "`r paste0('PSID: ', params$psid, '  |  ', params$city, ', ', params$c
 date: "`r paste0('For the period from ', paste0('2017-01-01 to ', Sys.Date(), '.'))`"
 output: 
   html_document:
-    #theme: default
     toc: true
     toc_float: true
 params: 
@@ -14,6 +13,11 @@ params:
   county: "aaa"
 ---
 
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    background-color: #414141;
+}
+</style>
 
 ```{r, echo=FALSE}
 library(knitr)
@@ -63,12 +67,12 @@ l1a <- "Of the "
 l1b <- " chemicals tested for in your water system, "
 l1c <- " **chemicals were detected**, and " 
 l1d <- " **average chemical findings exceeded their MCL, though exceedance alone does not constitute a violation [$^*$](#vio-link)**. <br>"
-l2 <- "In the plot below, the Maximum Contaminant Level (MCL) is shown as a black horizontal dashed line. Each vertical bar is a contaminant that was detected. The higher the bar, the higher the average level of that contaminant over the roughly 2 year period of record (since 2017-01-01). Any contaminant at or above the black horizontal dashed line indicates contaminated water. <br><br> Hover over the bars to see more information."
+l2 <- "In the plot below, the Maximum Contaminant Level (MCL) is shown as a black horizontal dashed line. Each vertical bar is a contaminant that was detected. The higher the bar, the higher the average level of that contaminant over the period of record. Any contaminant at or above the black horizontal dashed line indicates contaminated water. <br><br> Hover over the bars to see more information."
 
 
 # text for psids with detects and non-detects
 l3 <- " **other chemicals were tested for and NOT detected**, including: <br><br> "
-l4 <- " <br><br> Because they were not detected, these chemicals are not included in the chart above."
+l4 <- " <br><br> Because they were not detected they are not included in the chart above."
 
 # text for psids with no records of detects
 l5 <- "**Although tests were made, no chemicals were detected in your water system.**" 
@@ -81,7 +85,7 @@ l6b <- "** water quality indicators were tested for in your system and, may have
 # l7 <- "If a contaminant has an exceedance of 999%, this indicates a detection for which the MCL is 0. Any number divided by 0 is infinite, thus it is assigned an arbitarty large value (999) to indicate exceedance." 
 
 # new line that removes unnecessary text vom of all chemical nondetects.
-l7 <- " other chemicals were tested for and NOT detected, thus these chemicals are not included in the chart above."
+l7 <- " other chemicals were tested for and NOT detected. They are not included in the chart above, but are reported in the table [below](#table)."
 l8 <- "** water quality indicators were tested for and may have been detected, though they pose no serious human health hazard (MCL = 0). They are reported in the [table below](#table)."
 
 
@@ -133,7 +137,7 @@ vio <- filter(ep@data, WATER_SYST == params$psid) %>% pull(GIS_STATUS)
 
 if(length(vio) == 1){
   if(vio == "RETURNED TO COMPLIANCE"){
-    viostr <- paste0(" This water system has **", vio, "**")
+    viostr <- paste0(" Status: **", vio, "**")
   }
 }
 
@@ -146,13 +150,13 @@ contactstr <- '[Contact your water system](#contact-link) for more information.'
 if(length(vio) == 1){ 
   if(vio == "IN COMPLIANCE") 
     viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "green"), 
-                     paste0(" This water system is **<font color = 'green'>", vio, "</font>**") )
+                     paste0(" Status: **<font color = 'green'>", vio, "</font>**") )
   if(vio == "OUT-OF-COMPLIANCE") 
     viostr <- paste0(" ", fontawesome::fa("exclamation-circle", fill = "red"), 
-                     paste0(" This water system is **<font color = 'red'>", vio, "</font>**") )
+                     paste0(" Status: **<font color = 'red'>", vio, "</font>**") )
   if(vio == "RETURNED TO COMPLIANCE") 
     viostr <- paste0(" ", fontawesome::fa("check-circle", fill = "orange"), 
-                     paste0(" This water system has **<font color = 'orange'>", vio, "</font>**") )
+                     paste0(" Status: **<font color = 'orange'>", vio, "</font>**") )
 }
 
 if(length(vio) == 0){
@@ -320,10 +324,12 @@ if(nrow(my_water_system) > 0 ){
 
 This Consumer Confidence Report was automatically generated, and hence, the data herein may be incomplete or inaccurate. The authors claim no liability or responsibility for data quality, and this data product falls under the [MIT License](https://github.com/caccr/cawdc_2019/LICENSE). This data represents the average result of all post-treatment samples from the period from `r paste0(paste0(lubridate::year(Sys.Date()), '-01-01'), ' to ', Sys.Date())`.  
 
-**For questions about your local water quality, contact your water system.**    
+**For questions about your local water quality, [contact](#contact-link) your water system.**    
 
 ***
 
 ### FAQ {#vio-link}
 
-To see frequently asked question about this CCR, [visit the FAQ](https://caccr.github.io/faq/).  
+To view frequently asked questions, [visit the FAQ](https://caccr.github.io/faq/).  
+
+

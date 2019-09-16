@@ -27,4 +27,4 @@ The scripts in this folder fall into 3 categories.
 
 ### etc
 
-`nav_bar_sub_head`: some HTML for wrtiting the top-level navbar on individual CCR index.html files  
+`styles.css`: slightly modified bootstrap theme  

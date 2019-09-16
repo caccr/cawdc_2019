@@ -205,23 +205,56 @@ gen_reports <- function(x,y,w,k) {
 
 # write the CCR index.htmls  
 mapply(gen_reports, 
-       psids[1:length(psids)], 
-       nams[1:length(psids)], 
-       cities[1:length(psids)],
-       counties[1:length(psids)]
+       psids, 
+       nams, 
+       cities,
+       counties
 )
 
-# add navbar to each file by reading in each index.html, and splicing in
-# the appropriate HTML, given in `nav_bar_sub_head`
-navbar <- read_lines("/Users/richpauloo/Github/cawdc_2019/etc/nav_bar_sub_head")
+# read in the header  (navbar) and footer (social links) HTML templates
+navbar <- read_lines("/Users/richpauloo/Github/cawdc_2019/R/etc/nav_bar_sub_head")
+foot   <- read_lines("/Users/richpauloo/Github/cawdc_2019/R/etc/foot.html")
 
-# read in the HTML files, insert the navbar code, then re-write the files
-#for(i in 1:length(psids)){
+# read in the HTML files
+# insert the navbar code and the footer with social links
+# then re-write the files
+
+# first get ordered compliance status of all psids
+status <- left_join(data.frame(WATER_SYST = psids), 
+                    select(filter(ep@data, ep@data$WATER_SYST %in% ep_with_chem_dat),
+                           WATER_SYST, GIS_STATUS)) %>% 
+  pull(GIS_STATUS)
+
 for(i in 1:length(psids)){
+# for(i in 1){
+  
+  # read in HTML files for individual CCRs
   index <- read_lines(paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], ".html"))
+  
+  # inset navbar
   index <- c(index[1:9], navbar, index[10:length(index)])
+  
+  # add the social footer and format social links specific to the ith psid
+  
+  # facebook
+  foot[35] <- paste0('<a href = "https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fcaccr.github.io%2Fccrs%2F', 
+                     psids[i], 
+                     '.html" target = "_blank" class="fa fa-facebook"></a>')
+  
+  # twitter
+  foot[36] <- paste0('<a href="https://twitter.com/intent/tweet?text=🚰+ Water+quality+in+',
+                     nams[i], ', ', counties[i],' CO.', ' Status: ', status[i], 
+                     '. ', '+ https://caccr.github.io/ccrs/', psids[i], 
+                     '.html" target = "_blank"  class="fa fa-twitter"></a>')
+  
+  # locate where in the html to insert the footer, then insert it
+  j <- str_which(index,"To view frequently asked questions") 
+  index <- c(index[1:j], foot, index[(j+3):length(index)])
+  
+  # save
   write_lines(index, paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], ".html"))
 }
+
 
 
 ##########################################################################

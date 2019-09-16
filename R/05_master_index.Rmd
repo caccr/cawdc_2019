@@ -4,7 +4,8 @@ title: "California Consumer Confidence Reports"
 output: 
   flexdashboard::flex_dashboard:
     #orientation: rows
-    social: menu
+    social: ["twitter","facebook"]
+    css: etc/styles.css
     #source_code: embed
 #runtime: shiny
 ---
@@ -26,7 +27,8 @@ Welcome to the California database for Consumer Confidence Reports (CCR), which 
 To view your CCR, first locate your water system.  
 
 <i class="fas fa-map-marked-alt" style = "color: #ec5b33"></i>
-**Search the map**: click <i class="fas fa-crosshairs"></i> to locate yourself, or <i class="fas fa-search"></i> to search by address. Then click a water system, and click the link to view your CCR. Click <img src="https://static.thenounproject.com/png/74310-200.png" style="width:15px;height:15px;"> to toggle basemaps and water systems by violation status.
+**Search the map**: click <i class="fas fa-crosshairs"></i> to locate yourself, or <i class="fas fa-search"></i> to search by address. Then click a water system, and click the link to view your CCR. 
+<!-- Click <img src="https://static.thenounproject.com/png/74310-200.png" style="width:15px;height:15px;"> to toggle basemaps and water systems by violation status. -->
 
 <i class="fas fa-table" style = "color: #ecbb33"></i>
 **Search the table**: change tabs, and use the Search bar to find your water system by name, city, county, or PSID (if you know it). Click the link to view your CCR.  
@@ -119,16 +121,16 @@ for(i in 1:3){
 
 # tiles
 l %>% 
-  addProviderTiles(providers$CartoDB.PositronNoLabels, group = "Carto") %>% 
-  addProviderTiles(providers$Esri.WorldImagery, group = "World") %>% 
-  addProviderTiles(providers$OpenStreetMap, group = "Street") %>% 
+  addProviderTiles(providers$CartoDB, group = "Light") %>% 
+  addProviderTiles(providers$CartoDB.DarkMatter, group = "Dark") %>% 
+  addProviderTiles(providers$Esri.WorldStreetMap, group = "Street") %>% 
   
   # view
   setView(-119, 37.5, 6) %>% 
   addLayersControl(
     overlayGroups = names(epl),
-    baseGroups = c("Carto", "World", "Street"),
-    options = layersControlOptions(collapsed = TRUE, 
+    baseGroups = c("Light", "Dark", "Street"),
+    options = layersControlOptions(collapsed = FALSE, 
                                    position = "bottomright")
   ) %>% 
   
