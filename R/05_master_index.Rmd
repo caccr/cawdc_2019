@@ -85,10 +85,46 @@ Column {.tabset}
 
 
 # now the leaflet: points
-# split points into list for each set of circle markers
-epl <- sf::st_as_sf(ep) %>% 
+# first, fix overlapping points with a custom
+# spatial jitter that moves points north east by a random amount
+# this will fix nearly all problems and avoid points landing
+# in water bodies, except on the west shores of Lake Tahoe
+# then, split points by compliance status to add to leaflet
+ep2 <- ep
+
+# list of overlapping points
+op <- ep2@coords %>% 
+  as.data.frame() %>% 
+  # add PSID to each point for re-joining later
+  mutate(psid = ep2$WATER_SYST) %>% 
+  # split by unique lat/lng: this will put points out of order
+  group_split(coords.x1, coords.x2) %>% 
+  # compute number of points in each group.
+  # groups with > 1 observation will get a jitter
+  map(., ~mutate(., len = nrow(.)))
+
+# if there are overlapping points, jitter them
+for(i in 1:length(op)){
+  if(nrow(op[[i]]) > 1) {
+    for(j in 1:nrow(op[[i]])){
+      op[[i]]$coords.x1[j] <- op[[i]]$coords.x1[j] + runif(1, 0.007, 0.010)
+      op[[i]]$coords.x2[j] <- op[[i]]$coords.x2[j] + runif(1, 0.007, 0.010)
+    }
+  }
+}
+op <- do.call(rbind.data.frame, op) %>% select(-len)
+
+# join to re-order the points, then overwrite the old coords with
+# the new, jittered coods.
+ep2@coords <- left_join(ep@data, op, by = c("WATER_SYST" = "psid")) %>% 
+  select(coords.x1, coords.x2) %>% 
+  as.matrix()
+
+
+
+epl <- sf::st_as_sf(ep2) %>% 
   # jitter points so that overlapping points are clickable
-  sf::st_jitter(factor = 0.004) %>% 
+  #sf::st_jitter(factor = 0.004) %>% 
   select(WATER_SYST, WATER_SY_1, GIS_STATUS, url) %>% 
   as(., "Spatial") %>% 
   # split by in-, out-of-, returned-to-compliance
