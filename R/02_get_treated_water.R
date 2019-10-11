@@ -9,7 +9,7 @@ library(raster)
 # "Zarghami, Rassam@Waterboards" <Rassam.Zarghami@waterboards.ca.gov>,
 # "Williams, Paul@Waterboards" <Paul.Williams@waterboards.ca.gov>,
 # "Killou, Wendy@Waterboards" <Wendy.Killou@waterboards.ca.gov>
-d  <- readxl::read_excel("/Users/richpauloo/Downloads/unit process objectives.xlsx")
+d  <- readxl::read_excel("/Users/richpauloo/Github/cawdc_2019/data/unit process objectives.xlsx")
 
 # exceedance compliance points
 # download, upzip, and read the spatial points
@@ -102,7 +102,7 @@ hrw$VIOL_END_DATE         <- lubridate::ymd(hrw$VIOL_END_DATE)
 hrw$ENF_ACTION_ISSUE_DATE <- lubridate::ymd(hrw$ENF_ACTION_ISSUE_DATE)
 
 # filter for 2018
-hrw_2018 <- filter(hrw, VIOL_BEGIN_DATE >= lubridate::ymd("2018-01-01"))
+#hrw_2018 <- filter(hrw, VIOL_BEGIN_DATE >= lubridate::ymd("2018-01-01"))
 
 
 # SDWIS chemical data has it all (violations and no violations)
@@ -135,24 +135,35 @@ nrow(chem_tp) / nrow(chem)
 
 # save
 #write_rds(chem_tp, "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp.rds")
-write_rds(filter(chem_tp, PRIM_STA_C %in% tps[1:5]),
-          "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_sub.rds")
+# write_rds(filter(chem_tp, PRIM_STA_C %in% tps[1:5]),
+#           "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_sub.rds")
 
 # write the minimal subset of data for an app 
 z <- select(chem_tp, PRIM_STA_C, CHEMICAL__, MCL, RPT_UNIT, XMOD,
             FINDING, `Water System Name`, `Principal County Served`, 
             CITY, `Primary Water Source Type`, `Total Population`, 
             `Total Number of Service Connections`)
-write_rds(z,
-          "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min.rds")
+# write_rds(z,
+#           "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min.rds")
 
-z2017 <- dplyr::select(chem_tp, SAMP_DATE, PRIM_STA_C, CHEMICAL__, MCL, RPT_UNIT,
-                FINDING, `Water System Name`, `Principal County Served`, 
-                CITY, `Primary Water Source Type`, `Total Population`, 
-                `Total Number of Service Connections`, XMOD) %>% 
-  mutate(SAMP_DATE = lubridate::ymd(SAMP_DATE)) %>% 
+
+# data since t0 with only essential cols
+z <- dplyr::select(chem_tp, SAMP_DATE, PRIM_STA_C, CHEMICAL__, MCL, RPT_UNIT,
+                   FINDING, `Water System Name`, `Principal County Served`, 
+                   CITY, `Primary Water Source Type`, `Total Population`, 
+                   `Total Number of Service Connections`, XMOD) %>% 
+  mutate(SAMP_DATE = lubridate::ymd(SAMP_DATE))
+
+# data since 2017 with only essential cols
+z2017 <- z %>% 
   filter(SAMP_DATE >= lubridate::ymd("2017-01-01"))
 
+# save these data
+write_rds(z,
+          "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min.rds")
 write_rds(z2017,
           "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min_2017.rds")
+
+
+
 

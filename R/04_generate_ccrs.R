@@ -187,16 +187,39 @@ ep@data <- ep@data %>%
                              ep$WATER_SYST, ".html'>VIEW CCR</a></b>"),
                       paste0("CRR unavailable.")))
 
-
 ##########################################################################
-# generate ccrs by first calling `03_psid_params` and passing this script
-# a psid. `03_psid_params` depends on the object `chem_tp`, which is loaded
-# in this script
+# make html and words ccrs by first calling `03_psid_params` 
+# and passing this script a psid. `03_psid_params` depends on the object `chem_tp_min_2017`, which is loaded in this script
 ##########################################################################
 
 
+##########################################################################
+# write the ccrs docx files
+##########################################################################
+# function to generate CCR docx files
+gen_word_reports <- function(x,y,w,k) {
+  rmarkdown::render(input = "/Users/richpauloo/Github/cawdc_2019/R/09_psid_params_word.Rmd", 
+                    output_file = sprintf("/Users/richpauloo/Github/jmcglone.github.io/word/%s.docx", x),
+                    params = list(psid = x, nam = y,
+                                  city = w, county = k))
+}
+
+# write the CCR docx files
+mapply(gen_word_reports, 
+       psids,
+       nams,
+       cities,
+       counties
+)
+
+
+
+
+##########################################################################
+# generate html ccrs 
+##########################################################################
 # function to generate CCR index.htmls  
-gen_reports <- function(x,y,w,k) {
+gen_html_reports <- function(x,y,w,k) {
   rmarkdown::render(input = "/Users/richpauloo/Github/cawdc_2019/R/03_psid_params.Rmd", 
                     output_file = sprintf("/Users/richpauloo/Github/jmcglone.github.io/ccrs/%s.html", x),
                     params = list(psid = x, nam = y,
@@ -204,7 +227,7 @@ gen_reports <- function(x,y,w,k) {
 }
 
 # write the CCR index.htmls  
-mapply(gen_reports, 
+mapply(gen_html_reports, 
        psids, 
        nams, 
        cities,
@@ -248,13 +271,12 @@ for(i in 1:length(psids)){
                      '.html" target = "_blank"  class="fa fa-twitter"></a>')
   
   # locate where in the html to insert the footer, then insert it
-  j <- str_which(index,"To view frequently asked questions") 
+  j <- str_which(index,"Download this report") 
   index <- c(index[1:j], foot, index[(j+3):length(index)])
   
   # save
   write_lines(index, paste0("/Users/richpauloo/Github/jmcglone.github.io/ccrs/", psids[i], ".html"))
 }
-
 
 
 ##########################################################################

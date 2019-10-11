@@ -106,7 +106,7 @@ On the [homepage](https://caccr.github.io), you might also try searching the tab
 *** 
 
 <details>
-<summary>**In the map, why does it say that there's no CCR available for my water system?**</summary>
+<summary>**On the map, why does it say that there's no CCR available for my water system?**</summary>
 
 CCRs are generated for water systems for which available data since 2019-01-01 is available. If state government databases lack water quality information for a particular system, this website is unable to generate a CCR. 
 
@@ -120,9 +120,33 @@ However, you should be able to view the compliance status of the water system in
 *** 
 
 <details>
+<summary>**On the map, why do some points seem to be in the wrong location?**</summary>
+
+Water system location data is sometimes only available for the center of a city.  
+
+Moreover, to improve mapping, whenever multiple points overlap, they are artifically "jittered" a random amount in the northeast direction.  
+
+
+</details>
+
+
+
+*** 
+
+
+<details>
 <summary>**Where does the data come from?**</summary>  
 
 The data used to build these reports are gathered and curated by the California State Water Resources Control Board, and freely available online. You can find water quality data [here](https://www.waterboards.ca.gov/water_issues/programs/hr2w/) and [here](https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/edtlibrary/), and water system spatial boundaries [here](https://data.ca.gov/dataset/drinking-water-water-system-service-area-boundaries).  
+
+</details>
+
+***
+
+<details>
+<summary>**Do these data reflect post-treatment values?**</summary>  
+
+Yes. All values reported herein are from post-treatment systems.  
 
 </details>
 

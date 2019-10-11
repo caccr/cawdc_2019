@@ -332,4 +332,9 @@ This Consumer Confidence Report was automatically generated, and hence, the data
 
 To view frequently asked questions, [visit the FAQ](https://caccr.github.io/faq/).  
 
+*** 
+
+### Download
+
+`r paste0("<a href ='https://github.com/caccr/caccr.github.io/raw/master/word/", params$psid, ".docx'>", fontawesome::fa('file-word', fill = '#00a1f1'), " Download this report.</a>")`
 
