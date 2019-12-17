@@ -1,5 +1,7 @@
 # California Water Quality Portal
 
+*Rich Pauloo, richpauloo@gmail.com, [website](http://richpauloo.com/)*
+
 [![](example.gif)](https://caccr.github.io)
 
 Scripts related to [calwaterquality.com](caccr.github.io), a near-real-time water quality visualization tool for California community water systems.  
