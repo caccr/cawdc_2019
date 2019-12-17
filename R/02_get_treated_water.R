@@ -139,10 +139,10 @@ nrow(chem_tp) / nrow(chem)
 #           "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_sub.rds")
 
 # write the minimal subset of data for an app 
-z <- select(chem_tp, PRIM_STA_C, CHEMICAL__, MCL, RPT_UNIT, XMOD,
-            FINDING, `Water System Name`, `Principal County Served`, 
-            CITY, `Primary Water Source Type`, `Total Population`, 
-            `Total Number of Service Connections`)
+z <- dplyr::select(chem_tp, PRIM_STA_C, CHEMICAL__, MCL, RPT_UNIT, XMOD,
+                   FINDING, `Water System Name`, `Principal County Served`, 
+                   CITY, `Primary Water Source Type`, `Total Population`, 
+                   `Total Number of Service Connections`)
 # write_rds(z,
 #           "/Users/richpauloo/Desktop/ca_water_datathon/chem_tp_min.rds")
 

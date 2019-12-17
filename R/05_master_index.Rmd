@@ -1,5 +1,5 @@
 ---
-title: "California Consumer Confidence Reports"
+title: "California Water Quality Reports"
 #author: "Rich Pauloo"
 output: 
   flexdashboard::flex_dashboard:
@@ -7,6 +7,8 @@ output:
     social: ["twitter","facebook"]
     css: etc/styles.css
     #source_code: embed
+    logo: etc/cwq_8_pixels.png
+    favicon: etc/cwq_8_pixels.png
 #runtime: shiny
 ---
 
@@ -22,9 +24,9 @@ Directions {.sidebar}
 -----------------------------------------------------------------------
 
 
-Welcome to the California database for Consumer Confidence Reports (CCR), which display water quality data.  
+Welcome to the California Consumer Confidence Report (CCR) database, which displays water quality data.  
 
-To view your CCR, first locate your water system.  
+To view your water quality, first locate your water system.  
 
 <i class="fas fa-map-marked-alt" style = "color: #ec5b33"></i>
 **Search the map**: click <i class="fas fa-crosshairs"></i> to locate yourself, or <i class="fas fa-search"></i> to search by address. Then click a water system, and click the link to view your CCR. 
