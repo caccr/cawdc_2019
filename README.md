@@ -1,8 +1,8 @@
-# CCR Application
+# California Water Quality Portal
 
 [![](example.gif)](https://caccr.github.io)
 
-Scripts related to [caccr.github.io](caccr.github.io), a near-real-time water quality visualization tool for California community water systems.  
+Scripts related to [calwaterquality.com](caccr.github.io), a near-real-time water quality visualization tool for California community water systems.  
 
 `Python` - webscraping scripts  
 `R` - data acquisition, cleaning, generation of reports and webpages  
