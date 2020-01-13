@@ -1,6 +1,6 @@
 # California Water Quality Portal
 
-*Rich Pauloo, richpauloo@gmail.com, [website](http://richpauloo.com/)*
+*Rich Pauloo, richpauloo@gmail.com, [website](https://www.richpauloo.com/)*
 
 [![](example.gif)](https://caccr.github.io)
 
