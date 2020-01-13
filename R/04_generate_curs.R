@@ -285,6 +285,11 @@ for(i in 1:length(psids)){
 rmarkdown::render(input = "/Users/richpauloo/Github/cawdc_2019/R/05_master_index.Rmd", 
                   output_file = "/Users/richpauloo/Github/jmcglone.github.io/index.html")
 
+# adjust navbar-logo margin-top from 1px to 4px
+# by reading in index.html, making the change, then overwriting index.html
+il <- readr::read_lines("/Users/richpauloo/Github/jmcglone.github.io/index.html")
+il[stringr::str_which(il, "  margin-top: 1px;")] <- "  margin-top: 4px;"
+readr::write_lines(il, "/Users/richpauloo/Github/jmcglone.github.io/index.html")
 
 ##########################################################################
 # write the about index.html file and add the navbar
