@@ -47,7 +47,7 @@ To view your water quality, first locate your water system.
 
 This site is proudly built with [<i class="fab fa-r-project" style = "color: #2B76CC"></i>](https://www.r-project.org/) & [<i class="fab fa-github" style = "color: #6e5494"></i> Pages ](https://pages.github.com/) ([Jekyll](https://jekyllrb.com/) theme by [jmcglone](https://github.com/jmcglone/jmcglone.github.io)).   
 
-© 2019 by [Rich Pauloo](https://richpauloo.github.io).  
+© 2019 by [Rich Pauloo](https://www.richpauloo.com).  
 
 
 
