@@ -320,3 +320,32 @@ rmarkdown::render(input = "/Users/richpauloo/Github/cawdc_2019/R/08_faq.Rmd",
 index <- read_lines("/Users/richpauloo/Github/jmcglone.github.io/faq/index.html")
 index <- c(index[1:9], navbar, index[10:length(index)])
 write_lines(index, "/Users/richpauloo/Github/jmcglone.github.io/faq/index.html")
+
+##########################################################################
+# EDIT: this is a quick fix for now. The code needs to be refactored in 
+# the future. Basically, I want to change the navbar in all ccr pages 
+# and on the about and faq. In the future, everything above that depends 
+# on `navbar_sub_head` should be changed to what is inserted below:  
+##########################################################################
+
+# ccrs
+n <- readr::read_lines("~/Github/cawdc_2019/R/etc/navbar_with_logo.html")
+f <- list.files("~/Github/jmcglone.github.io/ccrs", full.names = TRUE)
+l <- vector("list", length = length(f))
+for(i in 1:length(f)) {
+  l[[i]] <- readr::read_lines(f[[i]])
+  l[[i]] <- c(l[[i]][1:10], n, l[[i]][55:length(l[[i]])])
+  readr::write_lines(l[[i]], f[[i]])
+}
+
+# about
+about <- readr::read_lines("~/Github/jmcglone.github.io/about/index.html")
+about <- c(about[1:10], n, about[55:length(about)])
+readr::write_lines(about, "~/Github/jmcglone.github.io/about/index.html")
+
+# faq
+faq <- readr::read_lines("~/Github/jmcglone.github.io/faq/index.html")
+faq <- c(faq[1:10], n, faq[55:length(faq)])
+readr::write_lines(faq, "~/Github/jmcglone.github.io/faq/index.html")
+
+
