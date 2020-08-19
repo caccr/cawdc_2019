@@ -2,7 +2,7 @@ library(tidyverse)
 library(dtplyr)
 
 # 10 mil rows x 55 cols from 2013-01-01 to 2019-09-27
-d <- fread("~/Desktop/ca_water_datathon/chem.csv")
+d <- data.table::fread("~/Desktop/ca_water_datathon/chem.csv")
 colnames(d)[c(1, 13, 25)] <- c("PWSID", "CHEMICAL", "CHEM_SORT")
 
 # create a temp folder
