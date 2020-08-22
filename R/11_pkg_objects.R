@@ -43,3 +43,52 @@ psid_analyte <-
   as_tibble()
 
 write_rds(psid_analyte, "~/Github/sdwisard/data-raw/psid_analyte.rds")
+
+
+# convert to tibble, count, filter NAs
+water_systems <- read_rds("~/Github/sdwisard/data-raw/water_systems.rds")
+analytes      <- read_rds("~/Github/sdwisard/data-raw/analytes.rds")
+psid_analyte  <- read_rds("~/Github/sdwisard/data-raw/psid_analyte.rds")
+
+water_systems <- as_tibble(water_systems)
+analytes      <- as_tibble(analytes)
+
+sapply(water_systems, function(x) sum(is.na(x))) / nrow(water_systems)
+sapply(analytes, function(x) sum(is.na(x))) / nrow(analytes)
+sapply(psid_analyte, function(x) sum(is.na(x))) / nrow(psid_analyte)
+
+# nearly 10% of psids have an NA county
+# much less than 1% of storet numbers have an NA analyte
+# much less than 1% of psids numbers have an NA storet or analyte
+
+# do the psids with an NA county (~10%) tend to have few observatioins?
+# Can we filter these out with little consequence?
+p_na  <- filter(water_systems, is.na(water_system_name) | is.na(county)) %>%
+  left_join(psid_analyte, by = "psid") %>%
+  count(psid) %>%
+  ggplot(aes(n)) +
+  geom_line(stat="density")
+
+p_all <- count(psid_analyte, psid) %>%
+  ggplot(aes(n)) +
+  geom_line(stat="density")
+
+# compared to the distribution of observation counts at all psids
+# the psids with missing county or water_system_name tend to have less
+# observations -- they're smaller
+cowplot::plot_grid(p_na, p_all)
+
+
+# filter NAs and write new objects
+filter(water_systems, ! is.na(water_system_name) | ! is.na(county)) %>%
+  write_rds("~/Github/sdwisard/data-raw/water_systems.rds")
+
+filter(analytes, ! is.na(analyte)) %>%
+  write_rds("~/Github/sdwisard/data-raw/analytes.rds")
+
+filter(psid_analyte, ! is.na(storet) | ! is.na(analyte)) %>%
+  write_rds("~/Github/sdwisard/data-raw/psid_analyte.rds")
+
+
+
+
