@@ -4,7 +4,7 @@ library(dtplyr)
 # 10 mil rows x 55 cols from 2013-01-01 to 2019-09-27
 d <- data.table::fread("~/Desktop/ca_water_datathon/chem.csv")
 colnames(d)[c(1, 13, 25)] <- c("PWSID", "CHEMICAL", "CHEM_SORT")
-d$PWSID <- d$PWSID %>% formatC(width = 7, flag = "0") 
+d$PWSID <- d$PWSID %>% formatC(width = 7, flag = "0")
 d$PWSID %>% nchar() %>% table()
 
 # data.frame of colnames = c(psid, water_system_name, county, zipcode)
@@ -15,16 +15,18 @@ water_systems <- d[, c("PWSID", "Water System Name",
   distinct() %>%
   rename(psid = PWSID,
          water_system_name = `Water System Name`,
-         county = `Principal County Served`)
-write_rds(water_systems, "~/Github/sdwisard/data-raw/water_systems.rds")
+         county = `Principal County Served`) %>%
+  as_tibble()
+write_rds(water_systems, "~/Documents/Github/sdwisard/data-raw/water_systems.rds")
 
 # data.frame of colnames = c(storet, analyte)
 # sdwisard::analytes
 
 analytes <- d[, c("STORE_NUM", "CHEMICAL")] %>%
   distinct() %>%
-  rename(storet = STORE_NUM, analyte = CHEMICAL)
-write_rds(analytes, "~/Github/sdwisard/data-raw/analytes.rds")
+  rename(storet = STORE_NUM, analyte = CHEMICAL) %>%
+  as_tibble()
+write_rds(analytes, "~/Documents/Github/sdwisard/data-raw/analytes.rds")
 
 
 # internal of colnames = c(psid, storet, analyte, start_date, end_date, n)
@@ -43,16 +45,13 @@ psid_analyte <-
   distinct() %>%
   as_tibble()
 
-write_rds(psid_analyte, "~/Github/sdwisard/data-raw/psid_analyte.rds")
+write_rds(psid_analyte, "~/Documents/Github/sdwisard/data-raw/psid_analyte.rds")
 
 
-# convert to tibble, count, filter NAs
-water_systems <- read_rds("~/Github/sdwisard/data-raw/water_systems.rds")
-analytes      <- read_rds("~/Github/sdwisard/data-raw/analytes.rds")
-psid_analyte  <- read_rds("~/Github/sdwisard/data-raw/psid_analyte.rds")
-
-water_systems <- as_tibble(water_systems)
-analytes      <- as_tibble(analytes)
+# count, filter NAs
+water_systems <- read_rds("~/Documents/Github/sdwisard/data-raw/water_systems.rds")
+analytes      <- read_rds("~/Documents/Github/sdwisard/data-raw/analytes.rds")
+psid_analyte  <- read_rds("~/Documents/Github/sdwisard/data-raw/psid_analyte.rds")
 
 sapply(water_systems, function(x) sum(is.na(x))) / nrow(water_systems)
 sapply(analytes, function(x) sum(is.na(x))) / nrow(analytes)
@@ -81,14 +80,16 @@ cowplot::plot_grid(p_na, p_all)
 
 
 # filter NAs and write new objects
-filter(water_systems, ! is.na(water_system_name) | ! is.na(county)) %>%
-  write_rds("~/Github/sdwisard/data-raw/water_systems.rds")
+filter(water_systems, ! is.na(water_system_name) & ! is.na(county)) %>%
+  write_rds("~/Documents/Github/sdwisard/data-raw/water_systems.rds")
 
 filter(analytes, ! is.na(analyte)) %>%
-  write_rds("~/Github/sdwisard/data-raw/analytes.rds")
+  write_rds("~/Documents/Github/sdwisard/data-raw/analytes.rds")
 
-filter(psid_analyte, ! is.na(storet) | ! is.na(analyte)) %>%
-  write_rds("~/Github/sdwisard/data-raw/psid_analyte.rds")
+filter(psid_analyte, ! is.na(storet) & ! is.na(analyte)) %>%
+  mutate(start_date = lubridate::ymd(lubridate::mdy_hms(start_date)),
+         end_date   = lubridate::ymd(lubridate::mdy_hms(end_date))) %>%
+  write_rds("~/Documents/Github/sdwisard/data-raw/psid_analyte.rds")
 
 
 

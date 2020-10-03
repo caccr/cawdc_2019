@@ -4,9 +4,10 @@ library(dtplyr)
 # 10 mil rows x 55 cols from 2015-01-01 to 2020-09-09
 d <- data.table::fread("~/Desktop/ca_water_datathon/chem.csv")
 colnames(d)[c(1, 13, 25)] <- c("PWSID", "CHEMICAL", "CHEM_SORT")
+d$SAMP_DATE <- lubridate::mdy_hms(d$SAMP_DATE)
 
 # convert to character and left pad 0's for 6 digit PSIDs
-d$PWSID <- d$PWSID %>% formatC(width = 7, flag = "0") 
+d$PWSID <- d$PWSID %>% formatC(width = 7, flag = "0")
 
 # sanity check
 d$PWSID %>% nchar() %>% table()
