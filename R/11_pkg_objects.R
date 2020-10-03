@@ -4,7 +4,8 @@ library(dtplyr)
 # 10 mil rows x 55 cols from 2013-01-01 to 2019-09-27
 d <- data.table::fread("~/Desktop/ca_water_datathon/chem.csv")
 colnames(d)[c(1, 13, 25)] <- c("PWSID", "CHEMICAL", "CHEM_SORT")
-
+d$PWSID <- d$PWSID %>% formatC(width = 7, flag = "0") 
+d$PWSID %>% nchar() %>% table()
 
 # data.frame of colnames = c(psid, water_system_name, county, zipcode)
 # sdwisard::water_systems

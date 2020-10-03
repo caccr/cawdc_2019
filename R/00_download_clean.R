@@ -8,15 +8,15 @@ library(tidyverse)    # general purpose data science toolkit
 library(foreign)      # for reading .dbf files
 
 # download, upzip, and read most recent data and chemical storet info
-urls <- c("https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/edtlibrary/chemical.zip",
-          "https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/edtlibrary/storet.zip")
+urls <- c("https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/edtlibrary/chemical_as_csv.zip",
+          "https://www.waterboards.ca.gov/drinking_water/certlic/drinkingwater/documents/edtlibrary/storet_as_dbf.zip")
 temp1 <- temp2 <- tempfile()
-download.file(urls[1], temp1)
-download.file(urls[2], temp2)
 
-# change exdir paths to a local working directory
+download.file(urls[1], temp1)
 unzip(temp1, 
       exdir = "/Users/richpauloo/Desktop/ca_water_datathon/")
+
+download.file(urls[2], temp2)
 unzip(temp2,
       exdir = "/Users/richpauloo/Desktop/ca_water_datathon/")
 
@@ -24,7 +24,7 @@ rm(temp1, temp2) # remove temp files
 
 # read chem and storet data into R
 # sometimes, R fails to unzip `chem`. unsure why, but manual download/unzip works
-chem  <- read.dbf("/Users/richpauloo/Desktop/ca_water_datathon/chemical.dbf")
+chem  <- data.table::fread("/Users/richpauloo/Desktop/ca_water_datathon/chemical.csv")
 stor  <- read.dbf("/Users/richpauloo/Desktop/ca_water_datathon/storet.dbf")
 # sdwis <- read_csv("https://data.ca.gov/sites/default/files/Public%20Potable%20Water%20Systems%20FINAL%2006-22-2018_0.csv")
 
